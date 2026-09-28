@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Research Assistant</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef2ff, #f8fafc);
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .navbar {
+            padding: 20px 40px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .navbar span {
+            font-size: 14px;
+            font-weight: normal;
+            color: #64748b;
+            margin-left: 10px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: #64748b;
+            font-size: 17px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #researchBtn {
+            background: #4f46e5;
+            color: white;
+        }
+
+        #researchBtn:hover {
+            background: #4338ca;
+        }
+
+        #clearBtn {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .agents {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .agent {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .agent-icon {
+            font-size: 25px;
+            margin-bottom: 5px;
+        }
+
+        #status {
+            text-align: center;
+            margin-top: 25px;
+            font-weight: bold;
+        }
+
+        #reportBox {
+            margin-top: 25px;
+            display: none;
+        }
+
+        #report {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 25px;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        #downloadBtn {
+            margin-top: 15px;
+            background: #16a34a;
+            color: white;
+            width: 100%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .hero h1 {
+                font-size: 30px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .buttons {
+                flex-direction: column;
+            }
+        }
+        .progress-step {
+    display: flex;
+    justify-content: space-between;
+    padding: 14px;
+    margin-top: 8px;
+    background: #f8fafc;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.progress-step span {
+    color: #64748b;
+}
+
+.progress-step.active {
+    border-color: #6366f1;
+    background: #eef2ff;
+}
+
+.progress-step.done {
+    border-color: #22c55e;
+    background: #f0fdf4;
+}
+
+.progress-step.done span {
+    color: #16a34a;
+}
+    </style>
+</head>
+
+<body>
+    <div id="authBox">
+
+    <!-- REGISTER -->
+    <div id="registerBox">
+
+        <h2>🔐 Create Account</h2>
+
+        <input
+            type="text"
+            id="regName"
+            placeholder="Enter your name"
+        >
+
+        <input
+            type="email"
+            id="regEmail"
+            placeholder="Enter your email"
+        >
+
+        <input
+            type="password"
+            id="regPassword"
+            placeholder="Create password"
+        >
+
+        <button onclick="registerUser()">
+            Register
+        </button>
+
+        <p id="authMessage"></p>
+
+    </div>
+
+
+    <!-- LOGIN -->
+    <div id="loginBox" style="display:none;">
+
+        <h2>🔑 Login</h2>
+
+        <input
+            type="email"
+            id="loginEmail"
+            placeholder="Enter your email"
+        >
+
+        <input
+            type="password"
+            id="loginPassword"
+            placeholder="Enter your password"
+        >
+
+        <button onclick="loginUser()">
+            Login
+        </button>
+
+        <p id="loginMessage"></p>
+
+    </div>
+
+</div>
+<div id="researchPage" style="display:none;">
+
+
+    <div class="navbar">
+        🤖 AI Research Assistant
+        <span>Multi-Agent Autonomous Research System</span>
+    </div>
+
+    <div class="container">
+
+        <div class="hero">
+            <h1>Research Smarter with AI</h1>
+            <p>
+                Multiple AI agents collaborate to research, verify,
+                analyze and generate your report.
+            </p>
+        </div>
+
+        <div class="card">
+
+            <label for="topic">
+                🔎 Enter your research topic
+            </label>
+
+            <input
+                id="topic"
+                type="text"
+                placeholder="Example: Artificial Intelligence in Agriculture"
+            >
+
+            <div class="buttons">
+
+                <button id="researchBtn" onclick="startResearch()">
+                    🚀 Start Research
+                </button>
+
+                <button id="clearBtn" onclick="clearAll()">
+                    🗑 Clear
+                </button>
+
+                <button id="historyBtn" onclick="showHistory()">
+    📚 Research History
+</button>
+
+            </div>
+
+            <div class="agents">
+
+                <div class="agent">
+                    <div class="agent-icon">🌐</div>
+                    Web Research
+                </div>
+
+                <div class="agent">
+                    <div class="agent-icon">📋</div>
+                    Extraction
+                </div>
+
+                <div class="agent">
+                    <div class="agent-icon">✅</div>
+                    Fact Checking
+                </div>
+
+                <div class="agent">
+                    <div class="agent-icon">📊</div>
+                    Analysis
+                </div>
+
+                <div class="agent">
+                    <div class="agent-icon">📝</div>
+                    Report
+                </div>
+
+            </div>
+
+            <div id="status"></div>
+            <div id="progressBox" style="display:none; margin-top:25px;">
+
+    <div class="progress-step" id="step1">
+        🌐 Web Research
+        <span>Waiting...</span>
+    </div>
+
+    <div class="progress-step" id="step2">
+        📋 Information Extraction
+        <span>Waiting...</span>
+    </div>
+
+    <div class="progress-step" id="step3">
+        ✅ Fact Checking
+        <span>Waiting...</span>
+    </div>
+
+    <div class="progress-step" id="step4">
+        📊 Analysis
+        <span>Waiting...</span>
+    </div>
+
+    <div class="progress-step" id="step5">
+        📝 Report Generation
+        <span>Waiting...</span>
+    </div>
+
+</div>
+
+            <div id="reportBox">
+
+                <h2>📄 Research Report</h2>
+
+                <div id="report"></div>
+
+                <button id="downloadBtn" onclick="downloadReport()">
+                    ⬇ Download Report
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        Multi-Agent Autonomous Research System • Python + FastAPI + Ollama
+    </footer>
+
+</div>
+
+
+    <script>
+      async function registerUser() {
+
+    const name = document.getElementById("regName").value;
+    const email = document.getElementById("regEmail").value;
+    const password = document.getElementById("regPassword").value;
+
+    if (!name || !email || !password) {
+        document.getElementById("authMessage").innerText =
+            "Please fill all fields.";
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/register", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                name: name,
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            document.getElementById("registerBox").style.display =
+                "none";
+
+            document.getElementById("loginBox").style.display =
+                "block";
+
+            document.getElementById("loginEmail").value =
+                email;
+
+            document.getElementById("loginMessage").innerText =
+                "✅ Registration successful. Please login.";
+
+        } else {
+
+            document.getElementById("authMessage").innerText =
+                "❌ " + data.message;
+        }
+
+    } catch (error) {
+
+        document.getElementById("authMessage").innerText =
+            "❌ Registration failed.";
+    }
+}
+async function loginUser() {
+
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if (!email || !password) {
+        document.getElementById("loginMessage").innerText =
+            "Please enter email and password.";
+        return;
+    }
+
+    try {
+
+        const response = await fetch("/login", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                email: email,
+                password: password
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+
+            document.getElementById("authBox").style.display =
+                "none";
+
+            document.getElementById("researchPage").style.display =
+                "block";
+
+        } else {
+
+            document.getElementById("loginMessage").innerText =
+                "❌ " + data.message;
+        }
+
+    } catch (error) {
+
+        document.getElementById("loginMessage").innerText =
+            "❌ Login failed.";
+    }
+}
+function setStep(step, status) {
+
+    const element = document.getElementById("step" + step);
+
+    if (!element) return;
+
+    const span = element.querySelector("span");
+
+    if (status === "Working") {
+
+        element.classList.add("active");
+        element.classList.remove("done");
+
+        if (span) {
+            span.innerText = "⏳ Working...";
+        }
+    }
+
+    if (status === "Completed") {
+
+        element.classList.remove("active");
+        element.classList.add("done");
+
+        if (span) {
+            span.innerText = "✅ Completed";
+        }
+    }
+
+    if (status === "Waiting...") {
+
+        element.classList.remove("active");
+        element.classList.remove("done");
+
+        if (span) {
+            span.innerText = "Waiting...";
+        }
+    }
+}
+
+
+async function startResearch() {
+
+    const topic = document.getElementById("topic").value.trim();
+    const status = document.getElementById("status");
+    const report = document.getElementById("report");
+    const reportBox = document.getElementById("reportBox");
+    const button = document.getElementById("researchBtn");
+
+    if (!topic) {
+        alert("Please enter a research topic.");
+        return;
+    }
+
+    button.disabled = true;
+    button.innerText = "⏳ Researching...";
+
+    status.innerText = "🔄 AI agents are starting...";
+    reportBox.style.display = "none";
+    document.getElementById("progressBox").style.display = "block";
+
+    try {
+
+        const response = await fetch("/research", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                topic: topic
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Server error: " + response.status);
+        }
+
+        const data = await response.json();
+
+        const jobId = data.job_id;
+
+        const checkProgress = setInterval(async () => {
+
+            const progressResponse =
+                await fetch(`/research/${jobId}/status`);
+
+            const progress =
+                await progressResponse.json();
+
+                if (progress.step) {
+
+    for (let i = 1; i <= 5; i++) {
+
+        if (i < progress.step) {
+            setStep(i, "Completed");
+        }
+
+        if (i === progress.step) {
+            setStep(i, progress.status);
+        }
+    }
+}
+
+            if (progress.completed === true) {
+
+                clearInterval(checkProgress);
+
+             report.innerHTML = progress.report.replace(
+    /(https?:\/\/[^\s]+)/g,
+    '<a href="$1" target="_blank">$1</a>'
+);
+
+                reportBox.style.display = "block";
+
+                status.innerText =
+                    "✅ Research completed successfully!";
+
+                button.disabled = false;
+
+                button.innerText =
+                    "🚀 Start Research";
+            }
+
+            if (progress.status === "Error") {
+
+                clearInterval(checkProgress);
+
+                status.innerText =
+                    "❌ Research failed.";
+
+                report.innerText =
+                    progress.report || "Unknown error";
+
+                reportBox.style.display = "block";
+
+                button.disabled = false;
+
+                button.innerText =
+                    "🚀 Start Research";
+            }
+
+        }, 1000);
+
+    } catch (error) {
+
+        status.innerText =
+            "❌ Something went wrong.";
+
+        report.innerText =
+            error.toString();
+
+        reportBox.style.display = "block";
+
+        button.disabled = false;
+
+        button.innerText =
+            "🚀 Start Research";
+    }
+}
+
+function clearAll() {
+
+    document.getElementById("topic").value = "";
+
+    document.getElementById("status").innerText = "";
+
+    document.getElementById("report").innerText = "";
+
+    document.getElementById("reportBox").style.display = "none";
+
+    document.getElementById("progressBox").style.display = "none";
+
+    document.getElementById("researchBtn").disabled = false;
+
+    document.getElementById("researchBtn").innerText =
+        "🚀 Start Research";
+}
+
+async function showHistory() {
+
+    try {
+
+        const response = await fetch("/history");
+
+        const data = await response.json();
+
+        if (!data.history || data.history.length === 0) {
+
+            alert("📚 No research history available.");
+
+            return;
+        }
+
+        let message = "📚 RESEARCH HISTORY\n\n";
+
+        data.history.forEach((item, index) => {
+
+            message +=
+                (index + 1) +
+                ". " +
+                item.topic +
+                "\n" +
+                "Date: " +
+                item.date +
+                "\n\n";
+        });
+
+        alert(message);
+
+    } catch (error) {
+
+        alert("❌ Unable to load research history.");
+    }
+}
+
+    </script>
+
+</body>
+
+</html>
