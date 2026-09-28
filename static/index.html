@@ -514,6 +514,13 @@ async function loginUser() {
 }
 function setStep(step, status) {
 
+function resetProgress() {
+
+    for (let i = 1; i <= 5; i++) {
+        setStep(i, "Waiting...");
+    }
+
+}
     const element = document.getElementById("step" + step);
 
     if (!element) return;
@@ -564,6 +571,7 @@ async function startResearch() {
         alert("Please enter a research topic.");
         return;
     }
+    resetProgress();
 
     button.disabled = true;
     button.innerText = "⏳ Researching...";
@@ -634,6 +642,7 @@ async function startResearch() {
 
                 button.innerText =
                     "🚀 Start Research";
+
             }
 
             if (progress.status === "Error") {
