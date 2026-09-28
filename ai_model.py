@@ -1,27 +1,28 @@
-import requests
+from groq import Groq
+import os
 
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY")
+)
 
 def ask_ai(prompt):
-    url = "http://localhost:11434/api/generate"
 
-    data = {
-        "model": "gemma3",
-        "prompt": prompt,
-        "stream": False
-    }
+    try:
 
-    response = requests.post(url, json=data)
+        response = client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            temperature=0.3,
+            max_tokens=1500
+        )
 
-    if response.status_code == 200:
-        result = response.json()
-        return result["response"]
-    else:
-        return "Error: Ollama AI response failed"
+        return response.choices[0].message.content
 
+    except Exception as e:
 
-if __name__ == "__main__":
-    answer = ask_ai(
-        "Explain Artificial Intelligence in two simple sentences."
-    )
-
-    print(answer)
+        return f"AI Error: {str(e)}"
