@@ -557,6 +557,11 @@ function resetProgress() {
         }
     }
 }
+function resetProgress() {
+    for (let i = 1; i <= 5; i++) {
+        setStep(i, "Waiting...");
+    }
+}
 
 
 async function startResearch() {
