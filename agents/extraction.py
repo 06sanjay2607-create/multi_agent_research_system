@@ -1,33 +1,44 @@
-from ai_model import ask_ai
-
-
 def extraction_agent(research_data):
-    information = research_data["information"]
 
-    prompt = f"""
-You are an Information Extraction Agent.
+    information = research_data.get("information", [])
+    sources = research_data.get("sources", [])
 
-From the following research information, extract the important facts.
-Give the facts as a simple numbered list.
+    document = research_data.get("document")
 
-Research Information:
-{information}
-"""
+    if document:
 
-    ai_result = ask_ai(prompt)
+        information = information.copy()
+
+        information.append(
+            f"\nDocument: {document['filename']}\n"
+            f"{document['text']}"
+        )
+
+    facts = []
+
+    for item in information:
+
+        if item and str(item).strip():
+
+            facts.append({
+                "fact": str(item).strip()
+            })
 
     return {
-        "facts": [ai_result],
-        "sources": research_data["sources"]
+        "facts": facts,
+        "sources": sources
     }
 
 
 if __name__ == "__main__":
+
     sample_data = {
         "information": [
             "Artificial Intelligence helps computers perform human-like tasks."
         ],
-        "sources": ["Local Ollama AI model"]
+        "sources": [
+            "Research source"
+        ]
     }
 
     result = extraction_agent(sample_data)

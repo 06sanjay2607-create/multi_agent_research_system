@@ -1,749 +1,4812 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI Research Assistant</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<title>ResearchAI</title>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #eef2ff, #f8fafc);
-            min-height: 100vh;
-            color: #1e293b;
-        }
+<style>
 
-        .navbar {
-            padding: 20px 40px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .navbar span {
-            font-size: 14px;
-            font-weight: normal;
-            color: #64748b;
-            margin-left: 10px;
-        }
-
-        .container {
-            max-width: 950px;
-            margin: 50px auto;
-            padding: 20px;
-        }
-
-        .hero {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .hero h1 {
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
-
-        .hero p {
-            color: #64748b;
-            font-size: 17px;
-        }
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        input {
-            width: 100%;
-            padding: 16px;
-            border: 1px solid #cbd5e1;
-            border-radius: 10px;
-            font-size: 16px;
-            outline: none;
-        }
-
-        input:focus {
-            border-color: #6366f1;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        button {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        #researchBtn {
-            background: #4f46e5;
-            color: white;
-        }
-
-        #researchBtn:hover {
-            background: #4338ca;
-        }
-
-        #clearBtn {
-            background: #e2e8f0;
-            color: #334155;
-        }
-
-        .agents {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .agent {
-            flex: 1;
-            min-width: 150px;
-            padding: 15px;
-            text-align: center;
-            background: #f8fafc;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            font-size: 14px;
-        }
-
-        .agent-icon {
-            font-size: 25px;
-            margin-bottom: 5px;
-        }
-
-        #status {
-            text-align: center;
-            margin-top: 25px;
-            font-weight: bold;
-        }
-
-        #reportBox {
-            margin-top: 25px;
-            display: none;
-        }
-
-        #report {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 25px;
-            border-radius: 12px;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-
-        #downloadBtn {
-            margin-top: 15px;
-            background: #16a34a;
-            color: white;
-            width: 100%;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: #64748b;
-            font-size: 13px;
-        }
-
-        @media (max-width: 600px) {
-
-            .navbar {
-                padding: 15px 20px;
-            }
-
-            .hero h1 {
-                font-size: 30px;
-            }
-
-            .container {
-                margin: 25px auto;
-            }
-
-            .buttons {
-                flex-direction: column;
-            }
-        }
-        .progress-step {
-    display: flex;
-    justify-content: space-between;
-    padding: 14px;
-    margin-top: 8px;
-    background: #f8fafc;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
 }
 
-.progress-step span {
-    color: #64748b;
+body{
+    background:#f6f7fb;
+    color:#171c2d;
 }
 
-.progress-step.active {
-    border-color: #6366f1;
-    background: #eef2ff;
+button,input{
+    font:inherit;
 }
 
-.progress-step.done {
-    border-color: #22c55e;
-    background: #f0fdf4;
+button{
+    cursor:pointer;
 }
 
-.progress-step.done span {
-    color: #16a34a;
+
+/* =========================
+   AUTH
+========================= */
+
+.auth-screen{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(circle at top left,#e7eaff,transparent 35%),
+        radial-gradient(circle at bottom right,#e8f0ff,transparent 35%),
+        #f5f6fa;
 }
-    </style>
+
+.auth-box{
+    width:430px;
+    max-width:92%;
+    background:white;
+    border:1px solid #e5e8ee;
+    border-radius:20px;
+    padding:35px;
+    box-shadow:0 20px 60px rgba(30,40,80,.10);
+}
+
+.auth-logo{
+    text-align:center;
+    font-size:28px;
+    font-weight:800;
+    margin-bottom:8px;
+}
+
+.auth-logo span{
+    color:#5865f2;
+}
+
+.auth-subtitle{
+    text-align:center;
+    color:#8991a1;
+    font-size:13px;
+    margin-bottom:28px;
+}
+
+.auth-form{
+    display:none;
+}
+
+.auth-form.active{
+    display:block;
+}
+
+.auth-title{
+    font-size:21px;
+    font-weight:750;
+    margin-bottom:7px;
+}
+
+.auth-description{
+    color:#8991a1;
+    font-size:13px;
+    margin-bottom:20px;
+}
+
+.input-group{
+    margin-bottom:14px;
+}
+
+.input-group label{
+    display:block;
+    font-size:12px;
+    font-weight:650;
+    margin-bottom:6px;
+    color:#596173;
+}
+
+.auth-input{
+    width:100%;
+    border:1px solid #dfe3ea;
+    border-radius:10px;
+    padding:13px;
+    outline:none;
+}
+
+.auth-input:focus{
+    border-color:#5865f2;
+}
+
+.auth-button{
+    width:100%;
+    border:0;
+    background:#5865f2;
+    color:white;
+    padding:13px;
+    border-radius:10px;
+    font-weight:700;
+    margin-top:5px;
+}
+
+.auth-button:hover{
+    background:#4d59df;
+}
+
+.otp-row{
+    display:flex;
+    gap:8px;
+}
+
+.otp-row .auth-input{
+    flex:1;
+}
+
+.otp-button{
+    border:1px solid #5865f2;
+    background:#fff;
+    color:#5865f2;
+    border-radius:10px;
+    padding:0 12px;
+    font-size:12px;
+    font-weight:700;
+}
+
+.auth-switch{
+    text-align:center;
+    margin-top:18px;
+    color:#8991a1;
+    font-size:13px;
+}
+
+.auth-switch button{
+    border:0;
+    background:none;
+    color:#5865f2;
+    font-weight:700;
+}
+
+.auth-message{
+    display:none;
+    margin-top:12px;
+    padding:10px;
+    border-radius:8px;
+    font-size:12px;
+}
+
+.auth-message.success{
+    display:block;
+    background:#eefaf3;
+    color:#23834e;
+}
+
+.auth-message.error{
+    display:block;
+    background:#fff0f0;
+    color:#c43b3b;
+}
+
+
+/* =========================
+   APP
+========================= */
+
+#app{
+    display:none;
+}
+
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    width:245px;
+    height:100vh;
+    background:#fff;
+    border-right:1px solid #e7e9ef;
+    padding:20px 15px;
+    z-index:50;
+}
+
+.logo{
+    font-size:22px;
+    font-weight:800;
+    padding:10px 12px 25px;
+}
+
+.logo span{
+    color:#5865f2;
+}
+
+.new-btn{
+    width:100%;
+    border:0;
+    background:#5865f2;
+    color:#fff;
+    padding:13px;
+    border-radius:11px;
+    font-weight:700;
+    margin-bottom:24px;
+}
+
+.new-btn:hover{
+    background:#4c58df;
+}
+
+.nav-title{
+    color:#9aa1b0;
+    font-size:10px;
+    font-weight:700;
+    margin:18px 12px 7px;
+    text-transform:uppercase;
+}
+
+.nav-item{
+    width:100%;
+    border:0;
+    background:transparent;
+    color:#687184;
+    text-align:left;
+    padding:11px 12px;
+    border-radius:9px;
+    margin:2px 0;
+}
+
+.nav-item:hover{
+    background:#f2f3f7;
+    color:#5865f2;
+}
+
+.nav-item.active{
+    background:#eef0ff;
+    color:#5865f2;
+    font-weight:700;
+}
+
+.logout-btn{
+    color:#d95353;
+}
+
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    margin-left:245px;
+    min-height:100vh;
+}
+
+.topbar{
+    height:70px;
+    background:#fff;
+    border-bottom:1px solid #e7e9ef;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 28px;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.top-title{
+    font-size:18px;
+    font-weight:750;
+}
+
+.top-actions{
+    display:flex;
+    gap:7px;
+}
+
+.icon-btn{
+    width:39px;
+    height:39px;
+    background:#fff;
+    border:1px solid #e1e4eb;
+    border-radius:9px;
+}
+
+.icon-btn:hover{
+    background:#f3f4f7;
+}
+
+
+/* =========================
+   PAGES
+========================= */
+
+.page{
+    display:none;
+    padding:30px;
+}
+
+.page.active{
+    display:block;
+}
+
+.page-header{
+    margin-bottom:22px;
+}
+
+.page-header h1{
+    font-size:28px;
+    margin-bottom:6px;
+}
+
+.page-header p{
+    color:#858d9d;
+    font-size:14px;
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:20px;
+}
+
+.stat-card{
+    background:#fff;
+    border:1px solid #e5e8ee;
+    border-radius:15px;
+    padding:20px;
+}
+
+.stat-label{
+    color:#8992a3;
+    font-size:12px;
+    margin-bottom:8px;
+}
+
+.stat-value{
+    font-size:25px;
+    font-weight:750;
+}
+
+
+/* =========================
+   CARDS
+========================= */
+
+.card{
+    background:#fff;
+    border:1px solid #e5e8ee;
+    border-radius:16px;
+    padding:21px;
+    margin-bottom:20px;
+}
+
+.card-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:17px;
+}
+
+.card-title h2{
+    font-size:17px;
+}
+
+.status{
+    display:block;
+    color:#929aaa;
+    font-size:11px;
+    margin-top:4px;
+}
+
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-card{
+    background:#fff;
+    border:1px solid #e5e8ee;
+    border-radius:17px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.search-row{
+    display:flex;
+    gap:10px;
+}
+
+.search-input{
+    flex:1;
+    border:1px solid #dfe3ea;
+    border-radius:10px;
+    padding:14px 16px;
+    outline:none;
+}
+
+.search-input:focus{
+    border-color:#5865f2;
+}
+
+.search-btn{
+    border:0;
+    background:#5865f2;
+    color:#fff;
+    padding:0 22px;
+    border-radius:10px;
+    font-weight:700;
+}
+
+.mode-row{
+    display:flex;
+    gap:8px;
+    margin-top:13px;
+}
+
+.mode-btn{
+    border:1px solid #dfe3ea;
+    background:#fff;
+    padding:8px 14px;
+    border-radius:8px;
+    color:#737b8c;
+}
+
+.mode-btn.active{
+    background:#eef0ff;
+    color:#5865f2;
+    border-color:#cdd2ff;
+}
+
+
+/* =========================
+   AGENTS
+========================= */
+
+.agents{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:11px;
+}
+
+.agent{
+    background:#fafbfc;
+    border:1px solid #e5e8ee;
+    border-radius:12px;
+    padding:15px;
+}
+
+.agent-icon{
+    font-size:20px;
+    margin-bottom:9px;
+}
+
+.agent-name{
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:5px;
+}
+
+.agent-status{
+    color:#929aaa;
+    font-size:11px;
+}
+
+.agent.active{
+    background:#f2f3ff;
+    border-color:#c9ceff;
+}
+
+.agent.done{
+    background:#f1fbf5;
+    border-color:#bce4cd;
+}
+
+.agent.done .agent-status{
+    color:#249358;
+}
+
+
+/* =========================
+   OUTPUT
+========================= */
+
+.research-output-grid{
+    display:grid;
+    grid-template-columns:minmax(0,1.65fr) minmax(320px,.9fr);
+    gap:20px;
+    align-items:start;
+}
+
+.final-answer-card{
+    min-height:520px;
+}
+
+.output-content{
+    color:#3d4656;
+    font-size:14px;
+    line-height:1.8;
+}
+
+.output-content p{
+    margin-bottom:14px;
+}
+
+.output-content h3{
+    color:#1c2436;
+    font-size:17px;
+    margin:23px 0 8px;
+}
+
+.output-content strong{
+    color:#182033;
+}
+
+.output-content ul{
+    margin:8px 0 15px 22px;
+}
+
+.output-content li{
+    margin-bottom:7px;
+}
+
+
+/* =========================
+   AI ANALYSIS
+========================= */
+
+.ai-analysis-card{
+    min-height:520px;
+    position:sticky;
+    top:90px;
+}
+
+.analysis-badge{
+    background:#eef0ff;
+    color:#5865f2;
+    padding:6px 10px;
+    border-radius:8px;
+    font-size:10px;
+    font-weight:800;
+}
+
+.analysis-box{
+    background:#f8f9fc;
+    border:1px solid #edf0f5;
+    border-radius:12px;
+    padding:17px;
+    color:#454d5d;
+    font-size:13px;
+    line-height:1.7;
+    max-height:620px;
+    overflow-y:auto;
+}
+
+.analysis-box h3{
+    color:#202638;
+    font-size:15px;
+    margin:18px 0 7px;
+}
+
+.analysis-box h3:first-child{
+    margin-top:0;
+}
+
+.analysis-box p{
+    margin-bottom:12px;
+}
+
+.analysis-box ul{
+    margin:7px 0 14px 20px;
+}
+
+
+/* =========================
+   SOURCES
+========================= */
+
+.sources-card{
+    margin-top:20px;
+}
+
+.source-link{
+    display:block;
+    background:#f8f9fc;
+    border:1px solid #edf0f5;
+    border-radius:9px;
+    padding:11px 13px;
+    margin:8px 0;
+    color:#5865f2;
+    text-decoration:none;
+    word-break:break-word;
+}
+
+.source-link:hover{
+    background:#f0f2ff;
+}
+
+
+/* =========================
+   COMMON
+========================= */
+
+.empty{
+    text-align:center;
+    padding:50px 20px;
+    color:#9ba3b2;
+}
+
+.small-btn{
+    border:1px solid #dfe3ea;
+    background:#fff;
+    padding:8px 11px;
+    border-radius:8px;
+    color:#626b7b;
+    font-size:12px;
+}
+
+.small-btn:hover{
+    background:#f3f4f7;
+}
+
+.list-item{
+    background:#fff;
+    border:1px solid #e5e8ee;
+    border-radius:12px;
+    padding:16px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.list-title{
+    font-weight:700;
+}
+
+.list-date{
+    color:#929aaa;
+    font-size:11px;
+    margin-top:4px;
+}
+
+.setting-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:18px 0;
+    border-bottom:1px solid #edf0f4;
+}
+
+.setting-row:last-child{
+    border-bottom:0;
+}
+
+.setting-title{
+    font-weight:700;
+}
+
+.setting-desc{
+    color:#8a93a3;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.toggle{
+    width:45px;
+    height:24px;
+    border:0;
+    border-radius:20px;
+    background:#d5d9e1;
+    position:relative;
+}
+
+.toggle.on{
+    background:#5865f2;
+}
+
+.toggle::after{
+    content:"";
+    width:18px;
+    height:18px;
+    background:#fff;
+    border-radius:50%;
+    position:absolute;
+    top:3px;
+    left:3px;
+    transition:.2s;
+}
+
+.toggle.on::after{
+    left:24px;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.4);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:500;
+}
+
+.modal.active{
+    display:flex;
+}
+
+.modal-box{
+    width:440px;
+    max-width:92%;
+    background:#fff;
+    border-radius:17px;
+    padding:25px;
+}
+
+.modal-box h2{
+    margin-bottom:8px;
+}
+
+.modal-box p{
+    color:#747d8e;
+    margin-bottom:17px;
+}
+
+.modal-input{
+    width:100%;
+    border:1px solid #dfe3ea;
+    border-radius:9px;
+    padding:12px;
+    margin-bottom:12px;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+}
+
+.primary{
+    border:0;
+    background:#5865f2;
+    color:#fff;
+    padding:10px 15px;
+    border-radius:8px;
+}
+
+.secondary{
+    border:1px solid #dfe3ea;
+    background:#fff;
+    padding:10px 15px;
+    border-radius:8px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1050px){
+
+    .agents{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .research-output-grid{
+        grid-template-columns:1fr;
+    }
+
+    .ai-analysis-card{
+        position:static;
+    }
+
+}
+
+@media(max-width:700px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .main{
+        margin-left:0;
+    }
+
+    .page{
+        padding:18px;
+    }
+
+    .search-row{
+        flex-direction:column;
+    }
+
+    .search-btn{
+        padding:13px;
+    }
+
+    .agents,
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .top-actions{
+        gap:3px;
+    }
+
+}
+
+
+/* ===== RESEARCHAI PREMIUM UI ===== */
+:root{--brand:#635bff;--brand-dark:#5148e8;--brand-soft:#f0efff;--ink:#111827;--muted:#7b8497;--line:#e8eaf1;--surface:#fff;--bg:#f7f8fc;--success:#20a464;--shadow:0 12px 35px rgba(25,32,56,.07);--shadow-lg:0 22px 60px rgba(25,32,56,.11)}
+body{background:radial-gradient(circle at 72% 0%,rgba(99,91,255,.07),transparent 28%),radial-gradient(circle at 15% 25%,rgba(91,141,239,.05),transparent 25%),var(--bg);color:var(--ink)}
+.auth-screen{background:radial-gradient(circle at 15% 15%,rgba(99,91,255,.18),transparent 32%),radial-gradient(circle at 85% 85%,rgba(80,150,255,.13),transparent 30%),#f7f8fc}
+.auth-box{border:1px solid rgba(255,255,255,.9);border-radius:24px;box-shadow:var(--shadow-lg);padding:38px;backdrop-filter:blur(18px)}
+.auth-logo{letter-spacing:-.7px}.auth-button,.search-btn,.new-btn{background:linear-gradient(135deg,var(--brand),#766fff);box-shadow:0 8px 18px rgba(99,91,255,.20);transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}.auth-button:hover,.search-btn:hover,.new-btn:hover{background:linear-gradient(135deg,var(--brand-dark),#6a63f2);transform:translateY(-1px);box-shadow:0 11px 24px rgba(99,91,255,.26)}
+.sidebar{width:258px;background:rgba(255,255,255,.92);border-right:1px solid rgba(225,228,237,.9);padding:20px 14px;box-shadow:8px 0 30px rgba(28,34,58,.035);backdrop-filter:blur(18px)}
+.logo{font-size:23px;padding:10px 14px 26px;letter-spacing:-.6px}.new-btn{border-radius:13px;padding:14px;margin-bottom:25px}.nav-title{margin:20px 13px 8px;letter-spacing:.9px}.nav-item{border-radius:11px;padding:11px 13px;margin:3px 0;transition:background .18s ease,color .18s ease,transform .18s ease}.nav-item:hover{background:#f5f5ff;transform:translateX(2px)}.nav-item.active{background:linear-gradient(90deg,#efefff,#f7f7ff);color:var(--brand);box-shadow:inset 3px 0 0 var(--brand)}
+.main{margin-left:258px}.topbar{height:72px;background:rgba(255,255,255,.88);border-bottom:1px solid rgba(231,233,239,.85);padding:0 30px;backdrop-filter:blur(18px);box-shadow:0 4px 18px rgba(20,28,50,.025)}.top-title{font-size:18px;letter-spacing:-.25px}.icon-btn{border-color:#e4e7ef;background:rgba(255,255,255,.9);border-radius:10px;transition:all .18s ease}.icon-btn:hover{color:var(--brand);border-color:#d6d3ff;background:var(--brand-soft);transform:translateY(-1px)}
+.page{padding:32px}.page-header h1{font-size:30px;letter-spacing:-.8px}.page-header p{font-size:13px}.stats{gap:16px}.stat-card{position:relative;overflow:hidden;border:1px solid rgba(229,232,238,.95);border-radius:18px;padding:21px;box-shadow:var(--shadow);transition:transform .2s ease,box-shadow .2s ease}.stat-card:hover{transform:translateY(-2px);box-shadow:0 18px 42px rgba(25,32,56,.09)}.stat-card::after{content:"";position:absolute;width:80px;height:80px;right:-25px;top:-28px;border-radius:50%;background:rgba(99,91,255,.08)}.stat-value{font-size:27px;letter-spacing:-.5px}
+.card,.search-card{border:1px solid rgba(229,232,238,.92);border-radius:18px;box-shadow:var(--shadow);transition:box-shadow .2s ease,border-color .2s ease}.card:hover,.search-card:hover{border-color:#e0e2ea}.card-title h2{letter-spacing:-.2px}.search-card{padding:22px}.search-input{background:#fbfcfe;border-color:#e1e5ed;border-radius:12px;transition:border-color .18s ease,box-shadow .18s ease}.search-input:focus{border-color:#aaa6ff;box-shadow:0 0 0 4px rgba(99,91,255,.09)}.search-btn{border-radius:12px;min-width:118px}.mode-btn{border-radius:9px;transition:all .18s ease}.mode-btn.active{box-shadow:0 4px 12px rgba(99,91,255,.09)}
+.agents{gap:12px}.agent{position:relative;overflow:hidden;border-radius:14px;background:linear-gradient(180deg,#fbfcfe,#f8f9fc);transition:all .22s ease}.agent.active{background:linear-gradient(180deg,#f4f3ff,#eeefff);border-color:#c8c5ff;box-shadow:0 8px 22px rgba(99,91,255,.10);transform:translateY(-2px)}.agent.done{background:linear-gradient(180deg,#f5fcf8,#eefaf4);border-color:#bce5d0}.agent-icon{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border-radius:11px;background:#fff;box-shadow:0 5px 14px rgba(30,40,70,.06)}
+.research-output-grid{gap:22px}.final-answer-card,.ai-analysis-card{border-radius:19px;box-shadow:var(--shadow)}.final-answer-card{min-height:560px}.ai-analysis-card{min-height:560px;box-shadow:0 14px 40px rgba(99,91,255,.08)}.analysis-badge{background:linear-gradient(135deg,#efeeff,#f6f5ff);border:1px solid #ddd9ff}.analysis-box{background:linear-gradient(180deg,#fafaff,#f7f8fc);border-color:#ececf5;border-radius:14px}.sources-card{border-radius:18px}.source-link{border-radius:11px;transition:all .18s ease}.source-link:hover{transform:translateX(2px);border-color:#d9d6ff}.list-item{border-radius:14px;box-shadow:0 5px 18px rgba(25,32,56,.045);transition:all .18s ease}.list-item:hover{transform:translateY(-1px);border-color:#dcd9ff;box-shadow:0 10px 25px rgba(25,32,56,.08)}.empty{color:#98a0b0}.setting-row{padding:20px 0}.modal-box{box-shadow:var(--shadow-lg)}
+@media(max-width:1050px){.sidebar{width:225px}.main{margin-left:225px}.page{padding:24px}}
+@media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.topbar{padding:0 16px}.page{padding:18px}.top-actions .icon-btn:nth-child(n+4){display:none}}
+/* ===== END PREMIUM UI ===== */
+
+
+/* =========================
+   UPLOAD MENU
+========================= */
+
+.upload-wrapper{
+    position:relative;
+    flex:1;
+    min-width:0;
+}
+
+.upload-wrapper .search-input{
+    width:100%;
+    padding-right:58px;
+}
+
+.plus-btn{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    width:36px;
+    height:36px;
+    border:1px solid #ddd9ff;
+    border-radius:50%;
+    background:#f4f3ff;
+    color:#5b4cff;
+    font-size:22px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:100;
+}
+
+.plus-btn:hover{
+    background:#e9e7ff;
+}
+
+.upload-menu{
+    display:none;
+    position:absolute;
+    right:8px;
+    top:55px;
+    width:180px;
+    background:#fff;
+    border:1px solid #e5e5e5;
+    border-radius:14px;
+    padding:8px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+    z-index:9999;
+}
+
+.upload-menu button{
+    width:100%;
+    border:0;
+    background:transparent;
+    padding:11px 12px;
+    text-align:left;
+    border-radius:9px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.upload-menu button:hover{
+    background:#f4f3ff;
+}
+
+.file-preview{
+    margin-top:10px;
+}
+
+</style>
+
 </head>
 
+
 <body>
-    <div id="authBox">
-
-    <!-- REGISTER -->
-    <div id="registerBox">
-
-        <h2>🔐 Create Account</h2>
-
-        <input
-            type="text"
-            id="regName"
-            placeholder="Enter your name"
-        >
-
-        <input
-            type="email"
-            id="regEmail"
-            placeholder="Enter your email"
-        >
-
-        <input
-            type="password"
-            id="regPassword"
-            placeholder="Create password"
-        >
-
-        <button onclick="registerUser()">
-            Register
-        </button>
-
-        <p id="authMessage"></p>
-
-    </div>
 
 
-    <!-- LOGIN -->
-    <div id="loginBox" style="display:none;">
+<!-- =====================================================
+     AUTH SCREEN
+===================================================== -->
 
-        <h2>🔑 Login</h2>
+<div class="auth-screen" id="authScreen">
 
-        <input
-            type="email"
-            id="loginEmail"
-            placeholder="Enter your email"
-        >
+<div class="auth-box">
 
-        <input
-            type="password"
-            id="loginPassword"
-            placeholder="Enter your password"
-        >
+<div class="auth-logo">
+Research<span>AI</span>
+</div>
 
-        <button onclick="loginUser()">
-            Login
-        </button>
+<div class="auth-subtitle">
+Multi-Agent Autonomous Research System
+</div>
 
-        <p id="loginMessage"></p>
 
-    </div>
+<!-- ================= LOGIN ================= -->
+
+<div class="auth-form active" id="loginForm">
+
+<div class="auth-title">
+Welcome back
+</div>
+
+<div class="auth-description">
+Login to continue your research.
+</div>
+
+
+<div class="input-group">
+
+<label>Email</label>
+
+<input
+class="auth-input"
+id="loginEmail"
+type="email"
+placeholder="Enter your email"
+>
 
 </div>
-<div id="researchPage" style="display:none;">
 
 
-    <div class="navbar">
-        🤖 AI Research Assistant
-        <span>Multi-Agent Autonomous Research System</span>
-    </div>
+<div class="input-group">
 
-    <div class="container">
+<label>Password</label>
 
-        <div class="hero">
-            <h1>Research Smarter with AI</h1>
-            <p>
-                Multiple AI agents collaborate to research, verify,
-                analyze and generate your report.
-            </p>
-        </div>
+<input
+class="auth-input"
+id="loginPassword"
+type="password"
+placeholder="Enter your password"
+>
 
-        <div class="card">
+</div>
 
-            <label for="topic">
-                🔎 Enter your research topic
-            </label>
 
-            <input
-                id="topic"
-                type="text"
-                placeholder="Example: Artificial Intelligence in Agriculture"
-            >
-
-            <div class="buttons">
-
-                <button id="researchBtn" onclick="startResearch()">
-                    🚀 Start Research
-                </button>
-
-                <button id="clearBtn" onclick="clearAll()">
-                    🗑 Clear
-                </button>
-
-                <button id="historyBtn" onclick="showHistory()">
-    📚 Research History
+<button
+class="auth-button"
+onclick="loginUser()"
+>
+Login
 </button>
 
-            </div>
 
-            <div class="agents">
+<div class="auth-switch">
 
-                <div class="agent">
-                    <div class="agent-icon">🌐</div>
-                    Web Research
-                </div>
+Don't have an account?
 
-                <div class="agent">
-                    <div class="agent-icon">📋</div>
-                    Extraction
-                </div>
-
-                <div class="agent">
-                    <div class="agent-icon">✅</div>
-                    Fact Checking
-                </div>
-
-                <div class="agent">
-                    <div class="agent-icon">📊</div>
-                    Analysis
-                </div>
-
-                <div class="agent">
-                    <div class="agent-icon">📝</div>
-                    Report
-                </div>
-
-            </div>
-
-            <div id="status"></div>
-            <div id="progressBox" style="display:none; margin-top:25px;">
-
-    <div class="progress-step" id="step1">
-        🌐 Web Research
-        <span>Waiting...</span>
-    </div>
-
-    <div class="progress-step" id="step2">
-        📋 Information Extraction
-        <span>Waiting...</span>
-    </div>
-
-    <div class="progress-step" id="step3">
-        ✅ Fact Checking
-        <span>Waiting...</span>
-    </div>
-
-    <div class="progress-step" id="step4">
-        📊 Analysis
-        <span>Waiting...</span>
-    </div>
-
-    <div class="progress-step" id="step5">
-        📝 Report Generation
-        <span>Waiting...</span>
-    </div>
+<button onclick="showRegister()">
+Create account
+</button>
 
 </div>
-
-            <div id="reportBox">
-
-                <h2>📄 Research Report</h2>
-
-                <div id="report"></div>
-
-                <button id="downloadBtn" onclick="downloadReport()">
-                    ⬇ Download Report
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <footer>
-        Multi-Agent Autonomous Research System • Python + FastAPI + Ollama
-    </footer>
 
 </div>
 
 
-    <script>
-      async function registerUser() {
+<!-- ================= REGISTER ================= -->
 
-    const name = document.getElementById("regName").value;
-    const email = document.getElementById("regEmail").value;
-    const password = document.getElementById("regPassword").value;
+<div class="auth-form" id="registerForm">
 
-    if (!name || !email || !password) {
-        document.getElementById("authMessage").innerText =
-            "Please fill all fields.";
+<div class="auth-title">
+Create account
+</div>
+
+<div class="auth-description">
+Register first to access the research dashboard.
+</div>
+
+
+<div class="input-group">
+
+<label>Name</label>
+
+<input
+class="auth-input"
+id="regName"
+type="text"
+placeholder="Enter your name"
+>
+
+</div>
+
+
+<div class="input-group">
+
+<label>Email</label>
+
+<div class="otp-row">
+
+<input
+class="auth-input"
+id="regEmail"
+type="email"
+placeholder="Enter your email"
+>
+
+<button
+class="otp-button"
+onclick="sendOTP()"
+>
+Send OTP
+</button>
+
+</div>
+
+</div>
+
+
+<div
+id="otpSection"
+style="display:none;"
+>
+
+<div class="input-group">
+
+<label>OTP</label>
+
+<div class="otp-row">
+
+<input
+class="auth-input"
+id="regOTP"
+type="text"
+maxlength="6"
+placeholder="Enter 6-digit OTP"
+>
+
+<button
+class="otp-button"
+onclick="verifyOTP()"
+>
+Verify
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="input-group">
+
+<label>Password</label>
+
+<input
+class="auth-input"
+id="regPassword"
+type="password"
+placeholder="Create a password"
+>
+
+</div>
+
+
+<button
+class="auth-button"
+id="registerBtn"
+style="display:none;"
+onclick="registerUser()"
+>
+Register
+</button>
+
+
+<div class="auth-switch">
+
+Already have an account?
+
+<button onclick="showLogin()">
+Login
+</button>
+
+</div>
+
+</div>
+
+
+<div id="authMessage" class="auth-message"></div>
+
+</div>
+
+</div>
+
+
+<!-- =====================================================
+     APPLICATION
+===================================================== -->
+
+<div id="app">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar">
+
+<div class="logo">
+Research<span>AI</span>
+</div>
+
+
+<button
+class="new-btn"
+onclick="openNewResearch()"
+>
++ New Research
+</button>
+
+
+<div class="nav-title">
+Workspace
+</div>
+
+
+<button
+class="nav-item active"
+onclick="showPage('dashboard',this)"
+>
+🏠 Feed
+</button>
+
+
+<button
+class="nav-item"
+onclick="showPage('explore',this)"
+>
+🔍 Explore
+</button>
+
+
+<button
+class="nav-item"
+onclick="showPage('following',this)"
+>
+👥 Following
+</button>
+
+
+<button
+class="nav-item"
+onclick="showPage('library',this)"
+>
+📚 Library
+</button>
+
+
+<div class="nav-title">
+Research
+</div>
+
+
+<button
+class="nav-item"
+onclick="showPage('research',this)"
+>
+✨ New Research
+</button>
+
+
+<button
+class="nav-item"
+onclick="showPage('history',this)"
+>
+🕘 History
+</button>
+
+
+<div class="nav-title">
+Account
+</div>
+
+
+<button
+class="nav-item"
+onclick="showPage('profile',this)"
+>
+👤 Profile
+</button>
+
+
+<button
+class="nav-item"
+onclick="showPage('settings',this)"
+>
+⚙️ Settings
+</button>
+
+
+<button
+class="nav-item logout-btn"
+onclick="logoutUser()"
+>
+🚪 Logout
+</button>
+
+</aside>
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<header class="topbar">
+
+<div
+class="top-title"
+id="topTitle"
+>
+Research Dashboard
+</div>
+
+
+<div class="top-actions">
+
+<button
+class="icon-btn"
+title="Notifications"
+onclick="showPage('notifications')"
+>
+🔔
+</button>
+
+
+<button
+class="icon-btn"
+title="Settings"
+onclick="showPage('settings')"
+>
+⚙️
+</button>
+
+
+<button
+class="icon-btn"
+title="Save"
+onclick="saveCurrentResearch()"
+>
+💾
+</button>
+
+
+<button
+class="icon-btn"
+title="Fullscreen"
+onclick="toggleFullscreen()"
+>
+⛶
+</button>
+
+
+<button
+class="icon-btn"
+title="Share"
+onclick="openShare()"
+>
+↗️
+</button>
+
+
+</div>
+
+</header>
+
+
+<!-- =====================================================
+     DASHBOARD
+===================================================== -->
+
+<section
+class="page active"
+id="dashboard"
+>
+
+<div class="page-header">
+
+<h1>
+Good to see you again
+</h1>
+
+<p>
+Research, analyze and understand information with AI.
+</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat-card">
+
+<div class="stat-label">
+Researches
+</div>
+
+<div
+class="stat-value"
+id="researchCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-label">
+Saved Research
+</div>
+
+<div
+class="stat-value"
+id="savedCount"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat-card">
+
+<div class="stat-label">
+Sources
+</div>
+
+<div
+class="stat-value"
+id="sourceCount"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+
+<div>
+
+<h2>
+Start a new research
+</h2>
+
+<span class="status">
+Ask anything you want to understand
+</span>
+
+</div>
+
+</div>
+
+
+<div class="search-row">
+
+<div class="upload-wrapper">
+
+<input
+class="search-input"
+id="dashboardSearch"
+placeholder="What would you like to research?"
+onkeydown="if(event.key==='Enter')startFromDashboard()"
+>
+
+<button
+type="button"
+class="plus-btn"
+onclick="toggleUploadMenu()"
+>
++
+</button>
+
+<div id="uploadMenu" class="upload-menu">
+
+<button type="button" onclick="selectUpload('document')">
+📄 Document
+</button>
+
+<button type="button" onclick="selectUpload('image')">
+🖼️ Photo
+</button>
+
+<button type="button" onclick="selectUpload('audio')">
+🎵 Audio
+</button>
+
+<button type="button" onclick="selectUpload('video')">
+🎥 Video
+</button>
+
+</div>
+
+</div>
+
+<input
+type="file"
+id="dashboardDocumentInput"
+accept=".pdf,.doc,.docx,.txt"
+style="display:none"
+onchange="handleDashboardDocument(this)"
+>
+
+<input
+type="file"
+id="dashboardImageInput"
+accept="image/*"
+style="display:none"
+onchange="handleDashboardImage(this)"
+>
+
+<button
+class="search-btn"
+type="button"
+onclick="startFromDashboard()"
+>
+Research
+</button>
+
+</div>
+
+</div>
+
+
+<div id="dashboardImagePreview" class="file-preview"></div>
+
+
+<div class="card">
+
+<div class="card-title">
+
+<h2>
+Recent Research
+</h2>
+
+<button
+class="small-btn"
+onclick="showPage('history')"
+>
+View all
+</button>
+
+</div>
+
+
+<div id="recentResearch">
+
+<div class="empty">
+No research yet.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     RESEARCH
+===================================================== -->
+
+<section
+class="page"
+id="research"
+>
+
+<div class="page-header">
+
+<h1>
+AI Research
+</h1>
+
+<p>
+Ask a question and let the research agents analyze it.
+</p>
+
+</div>
+
+
+<div class="search-card">
+
+<div class="search-row">
+
+<div class="upload-wrapper">
+
+<input
+class="search-input"
+id="researchInput"
+placeholder="Enter your research topic..."
+onkeydown="if(event.key==='Enter')startResearch()"
+>
+
+<button
+type="button"
+class="plus-btn"
+onclick="toggleResearchUploadMenu()"
+>
++
+</button>
+
+<div id="researchUploadMenu" class="upload-menu">
+
+<button type="button" onclick="selectResearchUpload('document')">
+📄 Document
+</button>
+
+<button type="button" onclick="selectResearchUpload('image')">
+🖼️ Photo
+</button>
+
+<button type="button" onclick="selectResearchUpload('audio')">
+🎵 Audio
+</button>
+
+<button type="button" onclick="selectResearchUpload('video')">
+🎥 Video
+</button>
+
+</div>
+
+</div>
+
+<input
+type="file"
+id="documentInput"
+accept=".pdf,.doc,.docx,.txt"
+style="display:none"
+onchange="showSelectedDocument(this)"
+>
+
+<input
+type="file"
+id="imageInput"
+accept="image/*"
+style="display:none"
+onchange="showSelectedImage(this)"
+>
+
+<input
+type="file"
+id="audioInput"
+accept="audio/*"
+style="display:none"
+onchange="showSelectedAudio(this)"
+>
+
+<input
+type="file"
+id="videoInput"
+accept="video/*"
+style="display:none"
+onchange="showSelectedVideo(this)"
+>
+
+<button
+class="search-btn"
+type="button"
+onclick="startResearch()"
+>
+Start Research
+</button>
+
+</div>
+
+<div id="filePreview" class="file-preview"></div>
+
+<div id="imagePreview" class="file-preview"></div>
+
+
+<div class="mode-row">
+
+<button
+class="mode-btn active"
+onclick="selectMode(this)"
+>
+Standard
+</button>
+
+
+<button
+class="mode-btn"
+onclick="selectMode(this)"
+>
+Deep Research
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+
+<div>
+
+<h2>
+Research Agents
+</h2>
+
+<span
+class="status"
+id="researchStatus"
+>
+Ready
+</span>
+
+</div>
+
+</div>
+
+
+<div class="agents">
+
+
+<div
+class="agent"
+id="agent1"
+>
+
+<div class="agent-icon">
+🌐
+</div>
+
+<div class="agent-name">
+Web Research
+</div>
+
+<div class="agent-status">
+Waiting
+</div>
+
+</div>
+
+
+<div
+class="agent"
+id="agent2"
+>
+
+<div class="agent-icon">
+📑
+</div>
+
+<div class="agent-name">
+Information Extraction
+</div>
+
+<div class="agent-status">
+Waiting
+</div>
+
+</div>
+
+
+<div
+class="agent"
+id="agent3"
+>
+
+<div class="agent-icon">
+✓
+</div>
+
+<div class="agent-name">
+Fact Checking
+</div>
+
+<div class="agent-status">
+Waiting
+</div>
+
+</div>
+
+
+<div
+class="agent"
+id="agent4"
+>
+
+<div class="agent-icon">
+🧠
+</div>
+
+<div class="agent-name">
+Analysis
+</div>
+
+<div class="agent-status">
+Waiting
+</div>
+
+</div>
+
+
+<div
+class="agent"
+id="agent5"
+>
+
+<div class="agent-icon">
+📝
+</div>
+
+<div class="agent-name">
+Report Generation
+</div>
+
+<div class="agent-status">
+Waiting
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FINAL ANSWER + AI ANALYSIS -->
+
+<div class="research-output-grid">
+
+
+<!-- LEFT -->
+
+<div class="card final-answer-card">
+
+<div class="card-title">
+
+<div>
+
+<h2>
+Final Answer
+</h2>
+
+<span class="status">
+AI Generated Research
+</span>
+
+</div>
+
+
+<div>
+
+<button
+class="small-btn"
+onclick="saveCurrentResearch()"
+>
+💾 Save
+</button>
+
+<button
+class="small-btn"
+onclick="downloadReport()"
+>
+Download
+</button>
+
+</div>
+
+</div>
+
+
+<div
+class="output-content"
+id="answerOutput"
+>
+
+<div class="empty">
+Start a research to see the final answer.
+</div>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT -->
+
+<div class="card ai-analysis-card">
+
+<div class="card-title">
+
+<div>
+
+<h2>
+AI Analysis
+</h2>
+
+<span class="status">
+Powered by AI
+</span>
+
+</div>
+
+
+<span class="analysis-badge">
+✨ AI
+</span>
+
+</div>
+
+
+<div
+class="analysis-box"
+id="analysisOutput"
+>
+
+<div class="empty">
+AI analysis will appear here.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- SOURCES -->
+
+<div class="card sources-card">
+
+<div class="card-title">
+
+<div>
+
+<h2>
+Sources & References
+</h2>
+
+<span class="status">
+Research sources used for this answer
+</span>
+
+</div>
+
+
+<span id="sourceCountLabel">
+0 sources
+</span>
+
+</div>
+
+
+<div id="sourcesOutput">
+
+<div class="empty">
+Sources will appear here after research.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     EXPLORE
+===================================================== -->
+
+<section
+class="page"
+id="explore"
+>
+
+<div class="page-header">
+
+<h1>
+Explore
+</h1>
+
+<p>
+Discover research topics and ideas.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="search-row">
+
+<input
+class="search-input"
+id="exploreInput"
+placeholder="Search a topic..."
+>
+
+<button
+class="search-btn"
+onclick="exploreTopic()"
+>
+Explore
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     FOLLOWING
+===================================================== -->
+
+<section
+class="page"
+id="following"
+>
+
+<div class="page-header">
+
+<h1>
+Following
+</h1>
+
+<p>
+Topics and research sources you follow.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="empty">
+You are not following any topics yet.
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     LIBRARY
+===================================================== -->
+
+<section
+class="page"
+id="library"
+>
+
+<div class="page-header">
+
+<h1>
+Library
+</h1>
+
+<p>
+Your saved research and important information.
+</p>
+
+</div>
+
+
+<div id="libraryList"></div>
+
+</section>
+
+
+<!-- =====================================================
+     HISTORY
+===================================================== -->
+
+<section
+class="page"
+id="history"
+>
+
+<div class="page-header">
+
+<h1>
+Research History
+</h1>
+
+<p>
+View your previous research.
+</p>
+
+</div>
+
+
+<div id="historyList"></div>
+
+</section>
+
+
+<!-- =====================================================
+     PROFILE
+===================================================== -->
+
+<section
+class="page"
+id="profile"
+>
+
+<div class="page-header">
+
+<h1>
+Profile
+</h1>
+
+<p>
+Your ResearchAI account.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="setting-row">
+
+<div>
+
+<div class="setting-title">
+Name
+</div>
+
+<div
+class="setting-desc"
+id="profileName"
+>
+Research User
+</div>
+
+</div>
+
+</div>
+
+
+<div class="setting-row">
+
+<div>
+
+<div class="setting-title">
+Email
+</div>
+
+<div
+class="setting-desc"
+id="profileEmail"
+>
+Not available
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     NOTIFICATIONS
+===================================================== -->
+
+<section
+class="page"
+id="notifications"
+>
+
+<div class="page-header">
+
+<h1>
+Notifications
+</h1>
+
+<p>
+Updates from your research workspace.
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="list-item">
+
+<div>
+
+<div class="list-title">
+🔎 Research system ready
+</div>
+
+<div class="list-date">
+Your AI research workspace is ready.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- =====================================================
+     SETTINGS
+===================================================== -->
+
+<section
+class="page"
+id="settings"
+>
+
+<div class="page-header">
+
+<h1>
+Settings
+</h1>
+
+<p>
+Manage your ResearchAI preferences.
+</p>
+
+</div>
+
+
+<div class="card">
+
+
+<div class="setting-row">
+
+<div>
+
+<div class="setting-title">
+AI Research Notifications
+</div>
+
+<div class="setting-desc">
+Receive research completion notifications.
+</div>
+
+</div>
+
+
+<button
+class="toggle on"
+onclick="toggleSetting(this)"
+></button>
+
+</div>
+
+
+<div class="setting-row">
+
+<div>
+
+<div class="setting-title">
+Auto Save
+</div>
+
+<div class="setting-desc">
+Automatically save completed research.
+</div>
+
+</div>
+
+
+<button
+class="toggle"
+onclick="toggleSetting(this)"
+></button>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- =====================================================
+     SHARE MODAL
+===================================================== -->
+
+<div
+class="modal"
+id="shareModal"
+>
+
+<div class="modal-box">
+
+<h2>
+Share Research
+</h2>
+
+<p>
+Share your current research.
+</p>
+
+
+<input
+class="modal-input"
+id="shareLink"
+readonly
+>
+
+
+<div class="modal-actions">
+
+<button
+class="secondary"
+onclick="closeShare()"
+>
+Cancel
+</button>
+
+
+<button
+class="primary"
+onclick="copyShareLink()"
+>
+Copy Link
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<script>
+
+
+/* =====================================================
+   GLOBAL VARIABLES
+===================================================== */
+
+let currentJobId = null;
+
+let currentTopic = "";
+
+let currentReport = "";
+
+let currentAnalysis = "";
+
+let currentSources = [];
+
+let otpVerified = false;
+let historyCache = [];
+
+let selectedDocumentText = "";
+let selectedDocumentName = "";
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+function showLogin(){
+
+    document
+        .getElementById("loginForm")
+        .classList.add("active");
+
+    document
+        .getElementById("registerForm")
+        .classList.remove("active");
+
+    clearAuthMessage();
+
+}
+
+
+function showRegister(){
+
+    document
+        .getElementById("registerForm")
+        .classList.add("active");
+
+    document
+        .getElementById("loginForm")
+        .classList.remove("active");
+
+    clearAuthMessage();
+
+}
+
+
+function showAuthMessage(message,type){
+
+    const box =
+        document.getElementById("authMessage");
+
+    box.textContent = message;
+
+    box.className =
+        "auth-message " + type;
+
+}
+
+
+function clearAuthMessage(){
+
+    const box =
+        document.getElementById("authMessage");
+
+    box.textContent = "";
+
+    box.className =
+        "auth-message";
+
+}
+
+
+/* =====================================================
+   SEND OTP
+===================================================== */
+
+async function sendOTP(){
+
+    const email =
+        document
+        .getElementById("regEmail")
+        .value
+        .trim();
+
+
+    if(!email){
+
+        showAuthMessage(
+            "Please enter your email.",
+            "error"
+        );
+
         return;
     }
 
-    try {
 
-        const response = await fetch("/register", {
-            method: "POST",
+    try{
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const response =
+            await fetch(
+                "/send-otp",
+                {
+                    method:"POST",
 
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password
-            })
-        });
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
 
-        const data = await response.json();
+                    body:JSON.stringify({
+                        email:email
+                    })
+                }
+            );
 
-        if (data.success) {
 
-            document.getElementById("registerBox").style.display =
-                "none";
+        const data =
+            await response.json();
 
-            document.getElementById("loginBox").style.display =
-                "block";
 
-            document.getElementById("loginEmail").value =
-                email;
+        if(data.success){
 
-            document.getElementById("loginMessage").innerText =
-                "✅ Registration successful. Please login.";
+            document
+                .getElementById("otpSection")
+                .style.display = "block";
 
-        } else {
 
-            document.getElementById("authMessage").innerText =
-                "❌ " + data.message;
+            showAuthMessage(
+                data.message ||
+                "OTP sent successfully.",
+                "success"
+            );
+
+        }else{
+
+            showAuthMessage(
+                data.message ||
+                "Unable to send OTP.",
+                "error"
+            );
+
         }
 
-    } catch (error) {
+    }catch(error){
 
-        document.getElementById("authMessage").innerText =
-            "❌ Registration failed.";
+        showAuthMessage(
+            "Unable to connect to server.",
+            "error"
+        );
+
     }
+
 }
-async function loginUser() {
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
 
-    if (!email || !password) {
-        document.getElementById("loginMessage").innerText =
-            "Please enter email and password.";
+/* =====================================================
+   VERIFY OTP
+===================================================== */
+
+async function verifyOTP(){
+
+    const email =
+        document
+        .getElementById("regEmail")
+        .value
+        .trim();
+
+
+    const otp =
+        document
+        .getElementById("regOTP")
+        .value
+        .trim();
+
+
+    if(!email || !otp){
+
+        showAuthMessage(
+            "Enter email and OTP.",
+            "error"
+        );
+
         return;
     }
 
-    try {
 
-        const response = await fetch("/login", {
-            method: "POST",
+    try{
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const response =
+            await fetch(
+                "/verify-otp",
+                {
+                    method:"POST",
 
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        });
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
 
-        const data = await response.json();
+                    body:JSON.stringify({
+                        email:email,
+                        otp:otp
+                    })
+                }
+            );
 
-        if (data.success) {
 
-            document.getElementById("authBox").style.display =
-                "none";
+        const data =
+            await response.json();
 
-            document.getElementById("researchPage").style.display =
-                "block";
 
-        } else {
+        if(data.success){
 
-            document.getElementById("loginMessage").innerText =
-                "❌ " + data.message;
+            otpVerified = true;
+
+
+            document
+                .getElementById("registerBtn")
+                .style.display = "block";
+
+
+            showAuthMessage(
+                "OTP verified successfully.",
+                "success"
+            );
+
+        }else{
+
+            showAuthMessage(
+                data.message ||
+                "Invalid OTP.",
+                "error"
+            );
+
         }
 
-    } catch (error) {
+    }catch(error){
 
-        document.getElementById("loginMessage").innerText =
-            "❌ Login failed.";
-    }
-}
-function setStep(step, status) {
+        showAuthMessage(
+            "Unable to verify OTP.",
+            "error"
+        );
 
-function resetProgress() {
-
-    for (let i = 1; i <= 5; i++) {
-        setStep(i, "Waiting...");
     }
 
-}
-    const element = document.getElementById("step" + step);
-
-    if (!element) return;
-
-    const span = element.querySelector("span");
-
-    if (status === "Working") {
-
-        element.classList.add("active");
-        element.classList.remove("done");
-
-        if (span) {
-            span.innerText = "⏳ Working...";
-        }
-    }
-
-    if (status === "Completed") {
-
-        element.classList.remove("active");
-        element.classList.add("done");
-
-        if (span) {
-            span.innerText = "✅ Completed";
-        }
-    }
-
-    if (status === "Waiting...") {
-
-        element.classList.remove("active");
-        element.classList.remove("done");
-
-        if (span) {
-            span.innerText = "Waiting...";
-        }
-    }
-}
-function resetProgress() {
-    for (let i = 1; i <= 5; i++) {
-        setStep(i, "Waiting...");
-    }
 }
 
 
-async function startResearch() {
+/* =====================================================
+   REGISTER
+===================================================== */
 
-    const topic = document.getElementById("topic").value.trim();
-    const status = document.getElementById("status");
-    const report = document.getElementById("report");
-    const reportBox = document.getElementById("reportBox");
-    const button = document.getElementById("researchBtn");
+async function registerUser(){
 
-    if (!topic) {
-        alert("Please enter a research topic.");
+    if(!otpVerified){
+
+        showAuthMessage(
+            "Please verify your OTP first.",
+            "error"
+        );
+
         return;
     }
-    resetProgress();
 
-    button.disabled = true;
-    button.innerText = "⏳ Researching...";
 
-    status.innerText = "🔄 AI agents are starting...";
-    reportBox.style.display = "none";
-    document.getElementById("progressBox").style.display = "block";
+    const name =
+        document
+        .getElementById("regName")
+        .value
+        .trim();
 
-    try {
 
-        const response = await fetch("/research", {
-            method: "POST",
+    const email =
+        document
+        .getElementById("regEmail")
+        .value
+        .trim();
 
-            headers: {
-                "Content-Type": "application/json"
-            },
 
-            body: JSON.stringify({
-                topic: topic
-            })
-        });
+    const password =
+        document
+        .getElementById("regPassword")
+        .value;
 
-        if (!response.ok) {
-            throw new Error("Server error: " + response.status);
-        }
 
-        const data = await response.json();
+    if(!name || !email || !password){
 
-        const jobId = data.job_id;
+        showAuthMessage(
+            "Please fill all fields.",
+            "error"
+        );
 
-        const checkProgress = setInterval(async () => {
-
-            const progressResponse =
-                await fetch(`/research/${jobId}/status`);
-
-            const progress =
-                await progressResponse.json();
-
-                if (progress.step) {
-
-    for (let i = 1; i <= 5; i++) {
-
-        if (i < progress.step) {
-            setStep(i, "Completed");
-        }
-
-        if (i === progress.step) {
-            setStep(i, progress.status);
-        }
+        return;
     }
-}
 
-            if (progress.completed === true) {
 
-                clearInterval(checkProgress);
+    try{
 
-             report.innerHTML = progress.report.replace(
-    /(https?:\/\/[^\s]+)/g,
-    '<a href="$1" target="_blank">$1</a>'
-);
+        const response =
+            await fetch(
+                "/register",
+                {
+                    method:"POST",
 
-                reportBox.style.display = "block";
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
 
-                status.innerText =
-                    "✅ Research completed successfully!";
+                    body:JSON.stringify({
 
-                button.disabled = false;
+                        name:name,
 
-                button.innerText =
-                    "🚀 Start Research";
+                        email:email,
 
-            }
+                        password:password
 
-            if (progress.status === "Error") {
+                    })
+                }
+            );
 
-                clearInterval(checkProgress);
 
-                status.innerText =
-                    "❌ Research failed.";
+        const data =
+            await response.json();
 
-                report.innerText =
-                    progress.report || "Unknown error";
 
-                reportBox.style.display = "block";
+        if(data.success){
 
-                button.disabled = false;
+            showAuthMessage(
+                "Registration successful. Please login.",
+                "success"
+            );
 
-                button.innerText =
-                    "🚀 Start Research";
-            }
 
-        }, 1000);
+            setTimeout(
+                () => {
 
-    } catch (error) {
+                    showLogin();
 
-        status.innerText =
-            "❌ Something went wrong.";
+                    document
+                    .getElementById("loginEmail")
+                    .value = email;
 
-        report.innerText =
-            error.toString();
+                },
+                1000
+            );
 
-        reportBox.style.display = "block";
+        }else{
 
-        button.disabled = false;
+            showAuthMessage(
+                data.message ||
+                "Registration failed.",
+                "error"
+            );
 
-        button.innerText =
-            "🚀 Start Research";
+        }
+
+    }catch(error){
+
+        showAuthMessage(
+            "Unable to connect to server.",
+            "error"
+        );
+
     }
+
 }
 
-function clearAll() {
 
-    document.getElementById("topic").value = "";
+/* =====================================================
+   LOGIN
+===================================================== */
 
-    document.getElementById("status").innerText = "";
+async function loginUser(){
 
-    document.getElementById("report").innerText = "";
+    const email =
+        document
+        .getElementById("loginEmail")
+        .value
+        .trim();
 
-    document.getElementById("reportBox").style.display = "none";
 
-    document.getElementById("progressBox").style.display = "none";
+    const password =
+        document
+        .getElementById("loginPassword")
+        .value;
 
-    document.getElementById("researchBtn").disabled = false;
 
-    document.getElementById("researchBtn").innerText =
-        "🚀 Start Research";
+    if(!email || !password){
+
+        showAuthMessage(
+            "Please enter email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/login",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        email:email,
+
+                        password:password
+
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(data.success){
+
+            localStorage.setItem(
+                "researchUser",
+                JSON.stringify(data.user)
+            );
+
+
+            openDashboard(
+                data.user
+            );
+
+        }else{
+
+            showAuthMessage(
+                data.message ||
+                "Invalid email or password.",
+                "error"
+            );
+
+        }
+
+    }catch(error){
+
+        showAuthMessage(
+            "Unable to connect to server.",
+            "error"
+        );
+
+    }
+
 }
 
-async function showHistory() {
 
-    try {
+/* =====================================================
+   OPEN DASHBOARD
+===================================================== */
 
-        const response = await fetch("/history");
+function openDashboard(user){
 
-        const data = await response.json();
+    document
+        .getElementById("authScreen")
+        .style.display = "none";
 
-        if (!data.history || data.history.length === 0) {
 
-            alert("📚 No research history available.");
+    document
+        .getElementById("app")
+        .style.display = "block";
+
+
+    if(user){
+
+        document
+            .getElementById("profileName")
+            .textContent =
+            user.name || "Research User";
+
+
+        document
+            .getElementById("profileEmail")
+            .textContent =
+            user.email || "Not available";
+
+    }
+
+
+    updateDashboardStats();
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logoutUser(){
+
+    localStorage.removeItem(
+        "researchUser"
+    );
+
+
+    document
+        .getElementById("app")
+        .style.display = "none";
+
+
+    document
+        .getElementById("authScreen")
+        .style.display = "flex";
+
+
+    showLogin();
+
+}
+
+
+/* =====================================================
+   PAGE NAVIGATION
+===================================================== */
+
+function showPage(
+    pageId,
+    clickedButton = null
+){
+
+    document
+        .querySelectorAll(".page")
+        .forEach(
+            page =>
+            page.classList.remove("active")
+        );
+
+
+    const page =
+        document.getElementById(pageId);
+
+
+    if(page){
+
+        page.classList.add("active");
+
+    }
+
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(
+            btn =>
+            btn.classList.remove("active")
+        );
+
+
+    if(clickedButton){
+
+        clickedButton.classList.add("active");
+
+    }
+
+
+    const titles = {
+
+        dashboard:
+        "Research Dashboard",
+
+        research:
+        "AI Research",
+
+        explore:
+        "Explore",
+
+        following:
+        "Following",
+
+        library:
+        "Library",
+
+        history:
+        "Research History",
+
+        profile:
+        "Profile",
+
+        notifications:
+        "Notifications",
+
+        settings:
+        "Settings"
+
+    };
+
+
+    document
+        .getElementById("topTitle")
+        .textContent =
+        titles[pageId] ||
+        "ResearchAI";
+
+
+    if(pageId === "history"){
+
+        loadHistory();
+
+    }
+
+
+    if(pageId === "library"){
+
+        loadLibrary();
+
+    }
+updateDashboardStats();
+
+}
+
+
+/* =====================================================
+   NEW RESEARCH
+===================================================== */
+
+function openNewResearch(){
+
+    showPage("research");
+
+    document
+        .getElementById("researchInput")
+        .value = "";
+
+    resetAgents();
+
+}
+
+
+/* =====================================================
+   DASHBOARD SEARCH
+===================================================== */
+
+function startFromDashboard(){
+
+    const topic =
+        document
+        .getElementById("dashboardSearch")
+        .value
+        .trim();
+
+
+    if(!topic && !selectedDocumentText){
+
+        alert(
+            "Please enter a research topic."
+        );
+
+        return;
+    }
+
+
+    document
+        .getElementById("researchInput")
+        .value = topic;
+
+
+    showPage("research");
+
+    startResearch();
+
+}
+
+
+/* =====================================================
+   START RESEARCH
+===================================================== */
+
+async function startResearch(){
+
+    const topic =
+        document
+        .getElementById("researchInput")
+        .value
+        .trim();
+
+
+    if(!topic){
+
+        alert(
+            "Please enter a research topic."
+        );
+
+        return;
+    }
+
+
+    currentTopic = topic;
+
+    resetAgents();
+
+
+    document
+        .getElementById("researchStatus")
+        .textContent =
+        "Starting research...";
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/research",
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        topic:topic
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!data.job_id){
+
+            alert(
+                "Research could not be started."
+            );
 
             return;
         }
 
-        let message = "📚 RESEARCH HISTORY\n\n";
 
-        data.history.forEach((item, index) => {
+        currentJobId =
+            data.job_id;
 
-            message +=
-                (index + 1) +
-                ". " +
-                item.topic +
-                "\n" +
-                "Date: " +
-                item.date +
-                "\n\n";
+
+        pollResearch();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        document
+            .getElementById(
+                "researchStatus"
+            )
+            .textContent =
+            "Connection Error";
+
+
+        alert(
+            "Unable to connect to research server."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   POLL RESEARCH
+===================================================== */
+
+async function pollResearch(){
+
+    if(!currentJobId){
+
+        return;
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+                `/research/${currentJobId}/status`
+            );
+
+
+        const data =
+            await response.json();
+
+
+        updateAgents(
+            data.step || 0,
+            data.status || ""
+        );
+
+
+        if(data.completed){
+
+            currentReport =
+                data.report || "";
+
+
+            currentAnalysis =
+                data.analysis || "";
+
+
+            currentSources =
+                data.sources || [];
+
+
+            displayResults();
+
+
+            document
+                .getElementById(
+                    "researchStatus"
+                )
+                .textContent =
+                "Research completed";
+
+
+            updateDashboardStats();
+
+
+            return;
+
+        }
+
+
+        if(data.status === "Error"){
+
+            document
+                .getElementById(
+                    "researchStatus"
+                )
+                .textContent =
+                "Research failed";
+
+
+            currentReport =
+                data.report || "";
+
+
+            document
+                .getElementById(
+                    "answerOutput"
+                )
+                .innerHTML =
+                formatReport(
+                    currentReport
+                );
+
+
+            return;
+
+        }
+
+
+        setTimeout(
+            pollResearch,
+            1200
+        );
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        setTimeout(
+            pollResearch,
+            2000
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   AGENTS
+===================================================== */
+
+function updateAgents(
+    step,
+    status
+){
+
+    for(
+        let i = 1;
+        i <= 5;
+        i++
+    ){
+
+        const agent =
+            document.getElementById(
+                "agent" + i
+            );
+
+
+        if(!agent){
+
+            continue;
+
+        }
+
+
+        agent.classList.remove(
+            "active",
+            "done"
+        );
+
+
+        const label =
+            agent.querySelector(
+                ".agent-status"
+            );
+
+
+        if(i < step){
+
+            agent.classList.add(
+                "done"
+            );
+
+
+            label.textContent =
+                "✓ Completed";
+
+        }
+
+
+        else if(i === step){
+
+            if(status === "Completed"){
+
+                agent.classList.add(
+                    "done"
+                );
+
+
+                label.textContent =
+                    "✓ Completed";
+
+            }else{
+
+                agent.classList.add(
+                    "active"
+                );
+
+
+                label.textContent =
+                    "Working...";
+
+            }
+
+        }
+
+
+        else{
+
+            label.textContent =
+                "Waiting";
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   RESET AGENTS
+===================================================== */
+
+function resetAgents(){
+
+    for(
+        let i = 1;
+        i <= 5;
+        i++
+    ){
+
+        const agent =
+            document.getElementById(
+                "agent" + i
+            );
+
+
+        if(agent){
+
+            agent.classList.remove(
+                "active",
+                "done"
+            );
+
+
+            agent.querySelector(
+                ".agent-status"
+            ).textContent =
+            "Waiting";
+
+        }
+
+    }
+
+
+    document
+        .getElementById(
+            "answerOutput"
+        )
+        .innerHTML =
+        '<div class="empty">Researching...</div>';
+
+
+    document
+        .getElementById(
+            "analysisOutput"
+        )
+        .innerHTML =
+        '<div class="empty">AI analysis is being generated...</div>';
+
+
+    document
+        .getElementById(
+            "sourcesOutput"
+        )
+        .innerHTML =
+        '<div class="empty">Collecting sources...</div>';
+
+
+    document
+        .getElementById(
+            "sourceCountLabel"
+        )
+        .textContent =
+        "0 sources";
+
+}
+
+
+/* =====================================================
+   DISPLAY RESULTS
+===================================================== */
+
+function displayResults(){
+
+    document
+        .getElementById(
+            "answerOutput"
+        )
+        .innerHTML =
+        formatReport(
+            currentReport
+        );
+
+
+    document
+        .getElementById(
+            "analysisOutput"
+        )
+        .innerHTML =
+        currentAnalysis
+        ?
+        formatAnalysis(
+            currentAnalysis
+        )
+        :
+        '<div class="empty">AI analysis is not available.</div>';
+
+
+    displaySources();
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(text){
+
+    return String(text || "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttribute(value){
+
+    return String(value || "")
+        .replace(/&/g,"&amp;")
+        .replace(/"/g,"&quot;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;");
+
+}
+
+
+/* =====================================================
+   FORMAT REPORT
+===================================================== */
+
+function formatReport(text){
+
+    if(!text){
+
+        return `
+        <div class="empty">
+        No result available.
+        </div>
+        `;
+
+    }
+
+
+    let safe =
+        escapeHtml(text);
+
+
+    safe =
+        safe.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^### (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^## (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^# (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^\s*[-•]\s+(.*)$/gm,
+            "<li>$1</li>"
+        );
+
+
+    safe =
+        safe.replace(
+            /(<li>.*?<\/li>)/gs,
+            "<ul>$1</ul>"
+        );
+
+
+    safe =
+        safe.replace(
+            /\n{2,}/g,
+            "</p><p>"
+        );
+
+
+    return "<p>" +
+        safe +
+        "</p>";
+
+}
+
+
+/* =====================================================
+   FORMAT ANALYSIS
+===================================================== */
+
+function formatAnalysis(text){
+
+    if(!text){
+
+        return `
+        <div class="empty">
+        No AI analysis available.
+        </div>
+        `;
+
+    }
+
+
+    let safe =
+        escapeHtml(text);
+
+
+    safe =
+        safe.replace(
+            /\*\*(.*?)\*\*/g,
+            "<strong>$1</strong>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^### (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^## (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^# (.*)$/gm,
+            "<h3>$1</h3>"
+        );
+
+
+    safe =
+        safe.replace(
+            /^\s*[-•]\s+(.*)$/gm,
+            "<li>$1</li>"
+        );
+
+
+    safe =
+        safe.replace(
+            /(<li>.*?<\/li>)/gs,
+            "<ul>$1</ul>"
+        );
+
+
+    safe =
+        safe.replace(
+            /\n{2,}/g,
+            "</p><p>"
+        );
+
+
+    return "<p>" +
+        safe +
+        "</p>";
+
+}
+
+
+/* =====================================================
+   SOURCES
+===================================================== */
+
+function displaySources(){
+
+    const container =
+        document.getElementById(
+            "sourcesOutput"
+        );
+
+
+    if(
+        !currentSources ||
+        currentSources.length === 0
+    ){
+
+        document
+            .getElementById(
+                "sourceCountLabel"
+            )
+            .textContent =
+            "0 sources";
+
+
+        container.innerHTML =
+            '<div class="empty">No sources available.</div>';
+
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "sourceCountLabel"
+        )
+        .textContent =
+        currentSources.length +
+        " sources";
+
+
+    let html = "";
+
+
+    currentSources.forEach(
+        source => {
+
+            const text =
+                String(source);
+
+
+            const match =
+                text.match(
+                    /https?:\/\/[^\s]+/
+                );
+
+
+            if(match){
+
+                const url =
+                    match[0];
+
+
+                const title =
+                    text
+                    .replace(
+                        url,
+                        ""
+                    )
+                    .replace(
+                        /[-–—]\s*$/,
+                        ""
+                    )
+                    .trim();
+
+
+                html += `
+
+                <a
+                class="source-link"
+                href="${escapeAttribute(url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                >
+
+                🔗
+                ${escapeHtml(title || url)}
+
+                </a>
+
+                `;
+
+            }
+
+            else{
+
+                html += `
+
+                <div class="source-link">
+
+                📚
+                ${escapeHtml(text)}
+
+                </div>
+
+                `;
+
+            }
+
+        }
+    );
+
+
+    container.innerHTML =
+        html;
+
+}
+
+
+/* =====================================================
+   SAVE RESEARCH
+===================================================== */
+
+function saveCurrentResearch(){
+
+    if(!currentReport){
+
+        alert(
+            "Complete a research first."
+        );
+
+        return;
+
+    }
+
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(
+                "savedResearch"
+            ) || "[]"
+        );
+
+
+    saved.unshift({
+
+        topic:
+        currentTopic,
+
+        report:
+        currentReport,
+
+        analysis:
+        currentAnalysis,
+
+        sources:
+        currentSources,
+
+        date:
+        new Date().toLocaleString()
+
+    });
+
+
+    localStorage.setItem(
+        "savedResearch",
+        JSON.stringify(saved)
+    );
+
+
+    alert(
+        "Research saved to Library."
+    );
+
+
+    updateDashboardStats();
+
+}
+
+
+/* =====================================================
+   LIBRARY
+===================================================== */
+
+function loadLibrary(){
+
+    const container =
+        document.getElementById(
+            "libraryList"
+        );
+
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(
+                "savedResearch"
+            ) || "[]"
+        );
+
+
+    if(!saved.length){
+
+        container.innerHTML = `
+
+        <div class="card">
+
+        <div class="empty">
+
+        Your library is empty.
+
+        </div>
+
+        </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        saved.map(
+            (item,index) => `
+
+            <div class="list-item">
+
+            <div>
+
+            <div class="list-title">
+
+            ${escapeHtml(item.topic)}
+
+            </div>
+
+            <div class="list-date">
+
+            Saved ${escapeHtml(item.date)}
+
+            </div>
+
+            </div>
+
+
+            <button
+            class="small-btn"
+            onclick="openSavedResearch(${index})"
+            >
+
+            Open
+
+            </button>
+
+            </div>
+
+            `
+        ).join("");
+
+}
+
+
+/* =====================================================
+   OPEN SAVED
+===================================================== */
+
+function openSavedResearch(index){
+
+    const saved =
+        JSON.parse(
+            localStorage.getItem(
+                "savedResearch"
+            ) || "[]"
+        );
+
+
+    const item =
+        saved[index];
+
+
+    if(!item){
+
+        return;
+
+    }
+
+
+    currentTopic =
+        item.topic;
+
+
+    currentReport =
+        item.report;
+
+
+    currentAnalysis =
+        item.analysis || "";
+
+
+    currentSources =
+        item.sources || [];
+
+
+    document
+        .getElementById(
+            "researchInput"
+        )
+        .value =
+        currentTopic;
+
+
+    displayResults();
+
+
+    showPage("research");
+
+}
+
+
+/* =====================================================
+   HISTORY
+===================================================== */
+
+async function loadHistory(){
+    const container = document.getElementById("historyList");
+    try{
+        const response = await fetch("/history");
+        const data = await response.json();
+        const rawHistory = (data.history || []).slice().reverse();
+        const seen = new Set();
+        historyCache = rawHistory.filter(item => {
+            const key = String(item.topic || "").trim().toLowerCase();
+            if(!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
         });
-
-        alert(message);
-
-    } catch (error) {
-
-        alert("❌ Unable to load research history.");
+        if(!historyCache.length){
+            container.innerHTML = `<div class="card"><div class="empty">No research history yet.</div></div>`;
+            return;
+        }
+        container.innerHTML = historyCache.map((item,index) => `
+            <div class="list-item" onclick="openHistoryResearch(${index})" style="cursor:pointer;">
+                <div><div class="list-title">${escapeHtml(item.topic || "Untitled research")}</div><div class="list-date">${escapeHtml(item.date || "")}</div></div>
+                <button class="small-btn" onclick="event.stopPropagation(); openHistoryResearch(${index})">Open</button>
+            </div>`).join("");
+    }catch(error){
+        console.error(error);
+        container.innerHTML = `<div class="card"><div class="empty">Unable to load history.</div></div>`;
     }
 }
 
-    </script>
+function openHistoryResearch(index){
+    const item = historyCache[index];
+    if(!item) return;
+    currentTopic = item.topic || "";
+    currentReport = item.report || "";
+    currentAnalysis = item.analysis || "";
+    currentSources = item.sources || [];
+    document.getElementById("researchInput").value = currentTopic;
+    displayResults();
+    showPage("research");
+}
+
+
+/* =====================================================
+   EXPLORE
+===================================================== */
+
+function exploreTopic(){
+
+    const topic =
+        document
+        .getElementById(
+            "exploreInput"
+        )
+        .value
+        .trim();
+
+
+    if(!topic){
+
+        alert(
+            "Enter a topic."
+        );
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "researchInput"
+        )
+        .value =
+        topic;
+
+
+    showPage("research");
+
+    startResearch();
+
+}
+
+
+/* =====================================================
+   MODE
+===================================================== */
+
+function selectMode(button){
+
+    document
+        .querySelectorAll(
+            ".mode-btn"
+        )
+        .forEach(
+            btn =>
+            btn.classList.remove(
+                "active"
+            )
+        );
+
+
+    button.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   FULLSCREEN
+===================================================== */
+
+function toggleFullscreen(){
+
+    if(!document.fullscreenElement){
+
+        document
+            .documentElement
+            .requestFullscreen();
+
+    }else{
+
+        document.exitFullscreen();
+
+    }
+
+}
+
+
+/* =====================================================
+   SHARE
+===================================================== */
+
+function openShare(){
+
+    if(!currentReport){
+
+        alert(
+            "Complete a research first."
+        );
+
+        return;
+
+    }
+
+
+    const link =
+        window.location.origin +
+        "/?research=" +
+        encodeURIComponent(
+            currentTopic
+        );
+
+
+    document
+        .getElementById(
+            "shareLink"
+        )
+        .value =
+        link;
+
+
+    document
+        .getElementById(
+            "shareModal"
+        )
+        .classList.add(
+            "active"
+        );
+
+}
+
+
+function closeShare(){
+
+    document
+        .getElementById(
+            "shareModal"
+        )
+        .classList.remove(
+            "active"
+        );
+
+}
+
+
+async function copyShareLink(){
+
+    const link =
+        document
+        .getElementById(
+            "shareLink"
+        )
+        .value;
+
+
+    try{
+
+        await navigator
+            .clipboard
+            .writeText(link);
+
+        alert(
+            "Research link copied."
+        );
+
+    }catch(error){
+
+        alert(
+            "Unable to copy link."
+        );
+
+    }
+
+
+    closeShare();
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+function toggleSetting(button){
+
+    button.classList.toggle(
+        "on"
+    );
+
+}
+
+
+/* =====================================================
+   DOWNLOAD
+===================================================== */
+
+function downloadReport(){
+
+    if(!currentReport){
+
+        alert(
+            "No report available."
+        );
+
+        return;
+
+    }
+
+
+    const content =
+
+`Research Topic:
+${currentTopic}
+
+FINAL ANSWER
+${currentReport}
+
+AI ANALYSIS
+${currentAnalysis}
+
+SOURCES
+${currentSources.join("\n")}`;
+
+
+    const blob =
+        new Blob(
+            [content],
+            {
+                type:
+                "text/plain"
+            }
+        );
+
+
+    const url =
+        URL.createObjectURL(
+            blob
+        );
+
+
+    const a =
+        document.createElement(
+            "a"
+        );
+
+
+    a.href = url;
+
+
+    a.download =
+        currentTopic
+        .replace(
+            /[^a-z0-9]/gi,
+            "_"
+        )
+        +
+        "_research.txt";
+
+
+    a.click();
+
+
+    URL.revokeObjectURL(
+        url
+    );
+
+}
+
+
+/* =====================================================
+   DASHBOARD STATS
+===================================================== */
+
+async function updateDashboardStats(){
+
+    try{
+
+        const response =
+            await fetch(
+                "/history"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        const history =
+            data.history || [];
+
+
+        document
+            .getElementById(
+                "researchCount"
+            )
+            .textContent =
+            history.length;
+
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    "savedResearch"
+                ) || "[]"
+            );
+        document
+            .getElementById("savedCount")
+            .textContent = saved.length;
+
+
+        let totalSources = 0;
+
+
+        history.forEach(
+            item => {
+
+                if(
+                    Array.isArray(
+                        item.sources
+                    )
+                ){
+
+                    totalSources +=
+                        item.sources.length;
+
+                }
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "sourceCount"
+            )
+            .textContent =
+            totalSources;
+
+
+        loadRecentResearch();
+
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+function openRecentResearch(topic){
+    const normalized = String(topic || "").trim().toLowerCase();
+    fetch("/history")
+        .then(response => response.json())
+        .then(data => {
+            const history = (data.history || []).slice().reverse();
+            const item = history.find(entry => String(entry.topic || "").trim().toLowerCase() === normalized);
+            if(!item) return;
+            currentTopic = item.topic || "";
+            currentReport = item.report || "";
+            currentAnalysis = item.analysis || "";
+            currentSources = item.sources || [];
+            document.getElementById("researchInput").value = currentTopic;
+            displayResults();
+            showPage("research");
+        })
+        .catch(error => console.error(error));
+}
+
+/* =====================================================
+   RECENT RESEARCH
+===================================================== */
+
+async function loadRecentResearch(){
+
+    const container =
+        document.getElementById(
+            "recentResearch"
+        );
+
+
+    try{
+
+        const response =
+            await fetch(
+                "/history"
+            );
+
+
+        const data =
+            await response.json();
+
+
+        const history =
+            (data.history || [])
+            .slice()
+            .reverse()
+            .slice(0,5);
+
+
+        if(!history.length){
+
+            container.innerHTML =
+            `
+            <div class="empty">
+            No research yet.
+            </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            history.map(
+                item => `
+
+                <div class="list-item"
+                     onclick="openRecentResearch(${JSON.stringify(item.topic || "")})"
+                     style="cursor:pointer;">
+
+                <div>
+
+                <div class="list-title">
+
+                ${escapeHtml(item.topic)}
+
+                </div>
+
+                <div class="list-date">
+
+                ${escapeHtml(item.date || "")}
+
+                </div>
+
+                </div>
+
+                <span class="small-btn">Open</span>
+
+                </div>
+
+                `
+            ).join("");
+
+
+    }catch(error){
+
+        console.error(error);
+
+    }
+
+}
+
+
+/* =====================================================
+   UPLOAD MENU
+===================================================== */
+
+function toggleUploadMenu(){
+
+    const menu =
+        document.getElementById("uploadMenu");
+
+    if(!menu){
+        return;
+    }
+
+    menu.style.display =
+        menu.style.display === "block"
+        ? "none"
+        : "block";
+}
+
+
+function selectUpload(type){
+
+    if(type === "document"){
+
+        const input =
+            document.getElementById("dashboardDocumentInput");
+
+        if(input){
+            input.click();
+        }
+
+    }else if(type === "image"){
+
+        const input =
+            document.getElementById("dashboardImageInput");
+
+        if(input){
+            input.click();
+        }
+
+    }else if(type === "audio"){
+        alert("Audio upload will be added soon.");
+
+    }else if(type === "video"){
+        alert("Video upload will be added soon.");
+    }
+
+    const menu =
+        document.getElementById("uploadMenu");
+
+    if(menu){
+        menu.style.display = "none";
+    }
+}
+
+
+function toggleResearchUploadMenu(){
+
+    const menu =
+        document.getElementById("researchUploadMenu");
+
+    if(!menu){
+        return;
+    }
+
+    menu.style.display =
+        menu.style.display === "block"
+        ? "none"
+        : "block";
+}
+
+
+function selectResearchUpload(type){
+
+    if(type === "document"){
+
+        const input =
+            document.getElementById("documentInput");
+
+        if(input){
+            input.click();
+        }
+
+    }else if(type === "image"){
+
+        const input =
+            document.getElementById("imageInput");
+
+        if(input){
+            input.click();
+        }
+
+    }else if(type === "audio"){
+
+        const input =
+            document.getElementById("audioInput");
+
+        if(input){
+            input.click();
+        }
+
+    }else if(type === "video"){
+
+        const input =
+            document.getElementById("videoInput");
+
+        if(input){
+            input.click();
+        }
+    }
+
+    const menu =
+        document.getElementById("researchUploadMenu");
+
+    if(menu){
+        menu.style.display = "none";
+    }
+}
+
+
+/* =====================================================
+   AUDIO / VIDEO UPLOAD
+===================================================== */
+
+let selectedAudioFile = null;
+let selectedVideoFile = null;
+
+function handleAudioSelection(input){
+
+    if(!input.files || input.files.length === 0){
+        return;
+    }
+
+    const file = input.files[0];
+
+    if(!file.type.startsWith("audio/")){
+        alert("Please select an audio file.");
+        input.value = "";
+        return;
+    }
+
+    selectedAudioFile = file;
+
+    alert("Audio selected: " + file.name);
+}
+
+function handleVideoSelection(input){
+
+    if(!input.files || input.files.length === 0){
+        return;
+    }
+
+    const file = input.files[0];
+
+    if(!file.type.startsWith("video/")){
+        alert("Please select a video file.");
+        input.value = "";
+        return;
+    }
+
+    selectedVideoFile = file;
+
+    alert("Video selected: " + file.name);
+}
+
+function showSelectedAudio(input){
+    handleAudioSelection(input);
+}
+
+function showSelectedVideo(input){
+    handleVideoSelection(input);
+}
+
+
+/* =====================================================
+   PHOTO UPLOAD
+===================================================== */
+
+let selectedImageFile = null;
+
+function handleImageSelection(input, previewId){
+
+    if(!input.files || input.files.length === 0){
+        return;
+    }
+
+    const file = input.files[0];
+
+    if(!file.type.startsWith("image/")){
+        alert("Please select an image file.");
+        input.value = "";
+        return;
+    }
+
+    selectedImageFile = file;
+
+    const preview = document.getElementById(previewId);
+
+    if(!preview){
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(event){
+
+        preview.innerHTML = `
+            <div style="
+                margin-top:10px;
+                padding:12px;
+                background:#f5f5ff;
+                border:1px solid #e4e1ff;
+                border-radius:12px;
+                font-size:13px;
+                color:#635bff;
+                display:flex;
+                align-items:center;
+                gap:12px;
+            ">
+                <img
+                    src="${event.target.result}"
+                    alt="Selected photo"
+                    style="
+                        width:58px;
+                        height:58px;
+                        object-fit:cover;
+                        border-radius:9px;
+                        border:1px solid #ddd9ff;
+                    "
+                >
+                <div>
+                    <strong>🖼️ ${escapeHtml(file.name)}</strong>
+                    <div style="color:#777;margin-top:3px;">Photo selected successfully</div>
+                </div>
+            </div>
+        `;
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function handleDashboardImage(input){
+    handleImageSelection(input,"dashboardImagePreview");
+}
+
+function showSelectedImage(input){
+    handleImageSelection(input,"imagePreview");
+}
+
+
+/* =====================================================
+   DOCUMENT UPLOAD
+===================================================== */
+
+async function uploadDocument(input,previewId,searchId){
+
+    if(!input.files || input.files.length === 0){
+        return;
+    }
+
+    const file = input.files[0];
+
+    selectedDocumentText = "";
+    selectedDocumentName = file.name;
+
+    const preview =
+        previewId
+        ? document.getElementById(previewId)
+        : null;
+
+    if(preview){
+        preview.innerHTML = `
+            <div style="
+                margin-top:10px;
+                padding:10px 14px;
+                background:#f5f5ff;
+                border:1px solid #e4e1ff;
+                border-radius:10px;
+                font-size:13px;
+                color:#635bff;
+            ">
+                📄 ${escapeHtml(file.name)}
+                <span style="color:#888;">Processing...</span>
+            </div>
+        `;
+    }
+
+    const formData = new FormData();
+    formData.append("file",file);
+
+    try{
+
+        const response =
+            await fetch("/upload-document",{
+                method:"POST",
+                body:formData
+            });
+
+        const data =
+            await response.json();
+
+        if(data.success){
+
+            selectedDocumentText = data.text || "";
+            selectedDocumentName = data.filename || file.name;
+
+            if(searchId){
+                const search =
+                    document.getElementById(searchId);
+
+                if(search){
+                    search.value = file.name;
+                }
+            }
+
+            if(preview){
+                preview.innerHTML = `
+                    <div style="
+                        margin-top:10px;
+                        padding:10px 14px;
+                        background:#eefaf3;
+                        border:1px solid #ccebd9;
+                        border-radius:10px;
+                        font-size:13px;
+                        color:#23834e;
+                    ">
+                        📄 ${escapeHtml(file.name)} — Document ready
+                    </div>
+                `;
+            }
+
+        }else{
+
+            selectedDocumentText = "";
+            selectedDocumentName = "";
+
+            if(preview){
+                preview.innerHTML = "";
+            }
+
+            alert(data.message || "Document processing failed.");
+        }
+
+    }catch(error){
+
+        console.error("Document upload error:",error);
+
+        selectedDocumentText = "";
+        selectedDocumentName = "";
+
+        if(preview){
+            preview.innerHTML = "";
+        }
+
+        alert("Unable to upload document.");
+    }
+}
+
+
+function handleDashboardDocument(input){
+    uploadDocument(input,null,"dashboardSearch");
+}
+
+
+function showSelectedDocument(input){
+    uploadDocument(input,"filePreview","researchInput");
+}
+
+
+/* =====================================================
+   MODE / LOGIN CHECK
+===================================================== */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        const user =
+            localStorage.getItem(
+                "researchUser"
+            );
+
+
+        if(user){
+
+            try{
+
+                openDashboard(
+                    JSON.parse(user)
+                );
+
+            }catch(error){
+
+                localStorage.removeItem(
+                    "researchUser"
+                );
+
+            }
+
+        }
+
+    }
+);
+
+</script>
 
 </body>
-
 </html>
