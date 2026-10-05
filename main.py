@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi import UploadFile, File
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+
 import threading
 import uuid
 from datetime import datetime
@@ -10,8 +12,24 @@ from orchestrator import run_research
 from auth import register_user, login_user
 from otp import send_otp, verify_otp
 
+
+# =========================================================
+# FASTAPI APPLICATION
+# =========================================================
+
 app = FastAPI(
     title="Multi-Agent Autonomous Research System"
+)
+
+
+# =========================================================
+# STATIC FILES
+# =========================================================
+
+app.mount(
+    "/static",
+    StaticFiles(directory="static"),
+    name="static"
 )
 
 
@@ -20,23 +38,34 @@ app = FastAPI(
 # =========================================================
 
 class ResearchRequest(BaseModel):
+
     topic: str
+
     document_text: str | None = None
+
     document_name: str | None = None
 
 
 class RegisterRequest(BaseModel):
+
     name: str
+
     email: str
+
     password: str
 
 
 class LoginRequest(BaseModel):
+
     email: str
+
     password: str
 
+
 class OTPRequest(BaseModel):
+
     email: str
+
     otp: str | None = None
 
 
@@ -62,6 +91,7 @@ def login(request: LoginRequest):
         request.password
     )
 
+
 # =========================================================
 # OTP
 # =========================================================
@@ -80,7 +110,10 @@ def send_otp_api(request: OTPRequest):
 
     except Exception as e:
 
-        print("OTP Send Error:", str(e))
+        print(
+            "OTP Send Error:",
+            str(e)
+        )
 
         return {
             "success": False,
@@ -119,7 +152,10 @@ def verify_otp_api(request: OTPRequest):
 
     except Exception as e:
 
-        print("OTP Verify Error:", str(e))
+        print(
+            "OTP Verify Error:",
+            str(e)
+        )
 
         return {
             "success": False,
@@ -140,11 +176,17 @@ history = []
 # RESEARCH JOB
 # =========================================================
 
-def run_job(job_id, topic, document_text=None, document_name=None):
+def run_job(
+    job_id,
+    topic,
+    document_text=None,
+    document_name=None
+):
 
     def progress_callback(step, status):
 
         jobs[job_id]["step"] = step
+
         jobs[job_id]["status"] = status
 
 
@@ -205,8 +247,6 @@ def run_job(job_id, topic, document_text=None, document_name=None):
 
         else:
 
-            # Fallback if orchestrator returns only report
-
             final_report = result
 
             analysis = ""
@@ -265,7 +305,6 @@ def run_job(job_id, topic, document_text=None, document_name=None):
             str(e)
         )
 
-
         jobs[job_id]["status"] = "Error"
 
         jobs[job_id]["report"] = str(e)
@@ -304,12 +343,13 @@ def research(request: ResearchRequest):
     thread = threading.Thread(
 
         target=run_job,
-args=(
-    job_id,
-    request.topic,
-    request.document_text,
-    request.document_name
-)
+
+        args=(
+            job_id,
+            request.topic,
+            request.document_text,
+            request.document_name
+        )
 
     )
 
@@ -395,66 +435,130 @@ def get_history():
         "history": history
 
     }
+
+
+# =========================================================
+# DOCUMENT UPLOAD
+# =========================================================
+
 @app.post("/upload-document")
-async def upload_document(file: UploadFile = File(...)):
+async def upload_document(
+    file: UploadFile = File(...)
+):
 
     try:
+
         content = await file.read()
 
         filename = file.filename.lower()
 
+
+        # =================================================
         # PDF
+        # =================================================
+
         if filename.endswith(".pdf"):
+
             from io import BytesIO
             from pypdf import PdfReader
 
-            reader = PdfReader(BytesIO(content))
+
+            reader = PdfReader(
+                BytesIO(content)
+            )
+
 
             text = ""
 
+
             for page in reader.pages:
+
                 page_text = page.extract_text()
 
                 if page_text:
+
                     text += page_text + "\n"
 
+
+        # =================================================
         # DOCX
+        # =================================================
+
         elif filename.endswith(".docx"):
+
             from io import BytesIO
             from docx import Document
 
-            document = Document(BytesIO(content))
 
-            text = "\n".join(
-                paragraph.text
-                for paragraph in document.paragraphs
+            document = Document(
+                BytesIO(content)
             )
 
+
+            text = "\n".join(
+
+                paragraph.text
+
+                for paragraph in document.paragraphs
+
+            )
+
+
+        # =================================================
         # TXT
+        # =================================================
+
         elif filename.endswith(".txt"):
+
             text = content.decode(
                 "utf-8",
                 errors="ignore"
             )
 
+
+        # =================================================
+        # UNSUPPORTED FILE
+        # =================================================
+
         else:
+
             return {
+
                 "success": False,
-                "message": "Only PDF, DOCX and TXT files are supported."
+
+                "message":
+                "Only PDF, DOCX and TXT files are supported."
+
             }
 
+
         return {
+
             "success": True,
+
             "filename": file.filename,
-            "message": "Document uploaded successfully",
+
+            "message":
+            "Document uploaded successfully",
+
             "text": text
+
         }
+
 
     except Exception as e:
 
-        print("Document Upload Error:", str(e))
+        print(
+            "Document Upload Error:",
+            str(e)
+        )
+
 
         return {
+
             "success": False,
-            "message": "Unable to process document."
+
+            "message":
+            "Unable to process document."
+
         }

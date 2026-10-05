@@ -4,6 +4,12 @@ import resend
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
+key = os.getenv("RESEND_API_KEY")
+
+print("RESEND KEY SET:", bool(key))
+print("RESEND KEY PREFIX:", key[:3] if key else None)
+print("RESEND KEY LENGTH:", len(key) if key else 0)
+
 otp_storage = {}
 
 

@@ -4,10 +4,14 @@ from database import get_connection
 
 def register_user(name, email, password):
 
+    email = email.strip().lower()
+    name = name.strip()
+
     connection = get_connection()
     cursor = connection.cursor()
 
     try:
+
         cursor.execute(
             """
             INSERT INTO users (name, email, password)
@@ -31,10 +35,13 @@ def register_user(name, email, password):
         }
 
     finally:
+
         connection.close()
 
 
 def login_user(email, password):
+
+    email = email.strip().lower()
 
     connection = get_connection()
     cursor = connection.cursor()
@@ -43,7 +50,7 @@ def login_user(email, password):
         """
         SELECT id, name, email
         FROM users
-        WHERE email = ? AND password = ?
+        WHERE LOWER(email) = ? AND password = ?
         """,
         (email, password)
     )
@@ -53,6 +60,7 @@ def login_user(email, password):
     connection.close()
 
     if user:
+
         return {
             "success": True,
             "user": {
