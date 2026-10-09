@@ -1293,6 +1293,8 @@ body{background:radial-gradient(circle at 72% 0%,rgba(99,91,255,.07),transparent
 }
 
 </style>
+</head>
+<body>
 
 <!-- ================= RESEARCHAI ENTRY PAGE ================= -->
 
@@ -1911,6 +1913,14 @@ style="display:none"
 onchange="handleDashboardImage(this)"
 >
 
+<input
+    type="file"
+    id="dashboardVideoInput"
+    accept=".mp4,.mov,.mkv,.webm,video/mp4,video/quicktime,video/x-matroska,video/webm"
+    style="display: none;"
+    onchange="uploadDashboardVideo(this)"
+>
+
 <button
 class="search-btn"
 type="button"
@@ -1926,6 +1936,15 @@ Research
 
 <div id="dashboardImagePreview" class="file-preview"></div>
 
+<div id="dashboardImagePreview" class="file-preview"></div>
+
+<button class="small-btn" onclick="analyzeSelectedPhoto()">
+    Analyze Photo
+</button>
+
+<div class="card">
+    <div class="card-title">
+        <h2>Recent Research</h2>
 
 <div class="card">
 
@@ -3218,14 +3237,18 @@ async function loginUser(){
 
 function openDashboard(user){
 
-    document
-        .getElementById("authScreen")
-        .style.display = "none";
+    const authScreen = document.getElementById("authScreen");
+    const app = document.getElementById("app");
 
+    if (authScreen) {
+        authScreen.style.display = "none";
+        authScreen.style.visibility = "hidden";
+    }
 
-    document
-        .getElementById("app")
-        .style.display = "block";
+    if (app) {
+        app.style.display = "block";
+        app.style.visibility = "visible";
+    }
 
 
     if(user){
@@ -3430,99 +3453,92 @@ function startFromDashboard(){
    START RESEARCH
 ===================================================== */
 
-async function startResearch(){
+```javascript
+async function startResearch() {
+    const input = document.getElementById("researchInput");
+    const status = document.getElementById("researchStatus");
 
-    const topic =
-        document
-        .getElementById("researchInput")
-        .value
-        .trim();
+    const topic = input.value.trim();
 
-
-    if(!topic){
-
-        alert(
-            "Please enter a research topic."
-        );
-
+    if (!topic) {
+        alert("Please enter a research topic or YouTube URL.");
         return;
     }
 
-
     currentTopic = topic;
-
     resetAgents();
+    status.textContent = "Starting research...";
 
+    try {
+        const isYouTube =
+            /^(https?:\/\/)?(www\.|m\.)?(youtube\.com|youtu\.be)\//i.test(topic);
 
-    document
-        .getElementById("researchStatus")
-        .textContent =
-        "Starting research...";
+        if (isYouTube) {
+            status.textContent = "Analyzing YouTube video...";
 
+            const response = await fetch("/research-video/youtube", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ url: topic })
+            });
 
-    try{
+            const data = await response.json();
 
-        const response =
-            await fetch(
-                "/research",
-                {
+            if (!response.ok) {
+                throw new Error(data.detail || "Video research failed.");
+            }
 
-                    method:"POST",
+            const reportWindow = window.open("", "_blank");
 
-                    headers:{
-                        "Content-Type":
-                        "application/json"
-                    },
+            if (reportWindow) {
+                const heading = reportWindow.document.createElement("h1");
+                heading.textContent = "ResearchAI - Video Report";
 
-                    body:JSON.stringify({
-                        topic:topic
-                    })
+                const report = reportWindow.document.createElement("pre");
+                report.textContent = data.report || "No report generated.";
+                report.style.whiteSpace = "pre-wrap";
+                report.style.fontFamily = "Arial, sans-serif";
 
-                }
-            );
+                reportWindow.document.title = "ResearchAI Video Report";
+                reportWindow.document.body.style.cssText =
+                    "font-family:Arial;max-width:900px;margin:30px auto;padding:20px;line-height:1.6";
 
+                reportWindow.document.body.append(heading, report);
+            } else {
+                alert("Allow pop-ups to view the video report.");
+            }
 
-        const data =
-            await response.json();
-
-
-        if(!data.job_id){
-
-            alert(
-                "Research could not be started."
-            );
-
+            status.textContent = "Video research completed!";
             return;
         }
 
+        const response = await fetch("/research", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ topic: topic })
+        });
 
-        currentJobId =
-            data.job_id;
+        const data = await response.json();
 
+        if (!response.ok || !data.job_id) {
+            throw new Error(data.detail || "Research could not be started.");
+        }
 
+        currentJobId = data.job_id;
         pollResearch();
 
-
-    }catch(error){
-
+    } catch (error) {
         console.error(error);
-
-
-        document
-            .getElementById(
-                "researchStatus"
-            )
-            .textContent =
-            "Connection Error";
-
-
-        alert(
-            "Unable to connect to research server."
-        );
-
+        status.textContent = "Research Error";
+        alert(error.message || "Unable to connect to research server.");
     }
-
 }
+```
+
 
 
 /* =====================================================
@@ -4856,40 +4872,27 @@ function toggleUploadMenu(){
 }
 
 
-function selectUpload(type){
+function selectUpload(type) {
+    if (type === "document") {
+        const input = document.getElementById("dashboardDocumentInput");
+        if (input) input.click();
 
-    if(type === "document"){
+    } else if (type === "image") {
+        const input = document.getElementById("dashboardImageInput");
+        if (input) input.click();
 
-        const input =
-            document.getElementById("dashboardDocumentInput");
+    } else if (type === "video") {
+        const input = document.getElementById("dashboardVideoInput");
+        if (input) input.click();
 
-        if(input){
-            input.click();
-        }
-
-    }else if(type === "image"){
-
-        const input =
-            document.getElementById("dashboardImageInput");
-
-        if(input){
-            input.click();
-        }
-
-    }else if(type === "audio"){
+    } else if (type === "audio") {
         alert("Audio upload will be added soon.");
-
-    }else if(type === "video"){
-        alert("Video upload will be added soon.");
     }
 
-    const menu =
-        document.getElementById("uploadMenu");
-
-    if(menu){
-        menu.style.display = "none";
-    }
+    const menu = document.getElementById("uploadMenu");
+    if (menu) menu.style.display = "none";
 }
+
 
 
 function toggleResearchUploadMenu(){
@@ -5078,8 +5081,20 @@ function handleImageSelection(input, previewId){
 }
 
 function handleDashboardImage(input){
-    handleImageSelection(input,"dashboardImagePreview");
+    handleImageSelection(input, "dashboardImagePreview");
+
+    if(input.files && input.files.length > 0){
+        const file = input.files[0];
+        const searchBox = document.getElementById("dashboardSearch");
+
+        if(searchBox){
+            searchBox.value = file.name;
+            searchBox.placeholder = "Photo selected: " + file.name;
+        }
+    }
 }
+
+
 
 function showSelectedImage(input){
     handleImageSelection(input,"imagePreview");
@@ -5244,27 +5259,167 @@ window.addEventListener(
 <script>
 
 function enterResearchAI(){
+    const entry = document.getElementById("researchAIEntry");
+    const auth = document.getElementById("authScreen");
+    const app = document.getElementById("app");
 
-    const entry =
-        document.getElementById("researchAIEntry");
-
-    if(entry){
-
-        entry.style.transition =
-            "opacity .4s ease";
-
-        entry.style.opacity = "0";
-
-        setTimeout(function(){
-
-            entry.style.display = "none";
-
-        },400);
-
+    // Show only Login/Register when Get Started is clicked.
+    // This also prevents a previously saved localStorage session from
+    // leaving the dashboard visible behind the authentication screen.
+    if (app) {
+        app.style.display = "none";
+        app.style.visibility = "hidden";
     }
 
+    if (auth) {
+        auth.style.display = "flex";
+        auth.style.visibility = "visible";
+        auth.style.position = "relative";
+        auth.style.zIndex = "1";
+    }
+
+    if (entry) {
+        entry.style.transition = "opacity .4s ease";
+        entry.style.opacity = "0";
+
+        window.setTimeout(function () {
+            entry.style.display = "none";
+        }, 400);
+    }
+}
+async function analyzeSelectedPhoto() {
+    if (!selectedImageFile) {
+        alert("First, select a photo.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedImageFile);
+
+    try {
+        const response = await fetch("/analyze-photo", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (!data.success) {
+            alert(data.message || "Photo analysis failed.");
+            return;
+        }
+
+        alert(data.analysis || "No analysis returned.");
+    } catch (error) {
+        console.error(error);
+        alert("Unable to connect to the server.");
+    }
 }
 
+async function uploadDashboardVideo(input) {
+    const file = input.files[0];
+
+    if (!file) return;
+
+    if (file.size > 100 * 1024 * 1024) {
+        alert("Video must be 100 MB or smaller.");
+        input.value = "";
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        alert("Video upload started. Please wait...");
+
+        const response = await fetch("/research-video/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Video research failed.");
+        }
+
+        alert("Video research completed!");
+
+        console.log("Video research result:", result);
+
+        const reportWindow = window.open("", "_blank");
+
+        if (reportWindow) {
+            reportWindow.document.title = "Video Research Report";
+
+            const heading = reportWindow.document.createElement("h1");
+            heading.textContent = "Video Research Report";
+            reportWindow.document.body.appendChild(heading);
+
+            const report = reportWindow.document.createElement("pre");
+            report.style.whiteSpace = "pre-wrap";
+            report.textContent = result.report || "No report returned.";
+            reportWindow.document.body.appendChild(report);
+        } else {
+            alert("Report received. Check the browser console for details.");
+        }
+
+    } catch (error) {
+        alert("Video Error: " + error.message);
+    } finally {
+        input.value = "";
+    }
+}
+
+async function researchYouTubeVideo() {
+    const url = document.getElementById("youtubeVideoUrl")?.value.trim();
+
+    if (!url) {
+        alert("Please enter a YouTube video URL.");
+        return;
+    }
+
+    try {
+        alert("YouTube video research started. Please wait...");
+
+        const response = await fetch("/research-video/youtube", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ url: url })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "YouTube research failed.");
+        }
+
+        const reportWindow = window.open("", "_blank");
+
+        if (reportWindow) {
+            reportWindow.document.title = "YouTube Research Report";
+
+            const heading = reportWindow.document.createElement("h1");
+            heading.textContent = "YouTube Research Report";
+            reportWindow.document.body.appendChild(heading);
+
+            const report = reportWindow.document.createElement("pre");
+            report.style.whiteSpace = "pre-wrap";
+            report.textContent = result.report || "No report returned.";
+            reportWindow.document.body.appendChild(report);
+        } else {
+            console.log("YouTube research result:", result);
+            alert("Research completed. Check the browser console.");
+        }
+
+    } catch (error) {
+        alert("YouTube Error: " + error.message);
+    }
+}
 </script>
+
 </body>
 </html>

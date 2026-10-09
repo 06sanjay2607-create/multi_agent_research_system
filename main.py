@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi import UploadFile, File
+from photo_search import search_photos
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
@@ -9,9 +10,15 @@ import uuid
 from datetime import datetime
 
 from orchestrator import run_research
+from ai_model import ask_ai
 from auth import register_user, login_user
 from otp import send_otp, verify_otp
-
+from fastapi import HTTPException
+from video_research import (
+    youtube_transcript,
+    uploaded_video_transcript,
+    analyze_video
+)
 
 # =========================================================
 # FASTAPI APPLICATION
@@ -68,6 +75,8 @@ class OTPRequest(BaseModel):
 
     otp: str | None = None
 
+class YouTubeVideoRequest(BaseModel):
+    url: str
 
 # =========================================================
 # AUTHENTICATION
@@ -562,3 +571,132 @@ async def upload_document(
             "Unable to process document."
 
         }
+
+
+@app.get("/search-photos")
+def search_photos_api(topic: str):
+    topic = topic.strip()
+
+    if not topic:
+        return {
+            "success": False,
+            "photos": [],
+            "message": "Please enter a research topic."
+        }
+
+    return search_photos(topic)
+
+import base64
+from groq import Groq
+import os
+
+@app.post("/analyze-photo")
+async def analyze_photo(file: UploadFile = File(...)):
+    if not file.content_type or not file.content_type.startswith("image/"):
+        return {
+            "success": False,
+            "message": "Please upload an image."
+        }
+
+    image_bytes = await file.read()
+
+    if not image_bytes:
+        return {
+            "success": False,
+            "message": "The uploaded photo is empty."
+        }
+
+    try:
+        client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+        image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+
+        response = client.chat.completions.create(
+            model="meta-llama/llama-4-scout-17b-16e-instruct",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "Analyze this image. Describe what is visible, identify important details, and explain them clearly. Do not guess details that cannot be seen."
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:{file.content_type};base64,{image_base64}"
+                            }
+                        }
+                    ]
+                }
+            ],
+            max_tokens=700
+        )
+
+        analysis = response.choices[0].message.content
+
+        return {
+            "success": True,
+            "filename": file.filename,
+            "analysis": analysis
+        }
+
+    except Exception as e:
+        print("Photo Analysis Error:", str(e))
+        return {
+            "success": False,
+            "message": "Unable to analyze this photo. Check the AI model and API settings."
+        }
+    
+# ==========================================
+# VIDEO RESEARCH - UPLOAD VIDEO
+# ==========================================
+
+@app.post("/research-video/upload")
+async def research_uploaded_video(file: UploadFile = File(...)):
+    try:
+        filename = file.filename or ""
+        content = await file.read(100 * 1024 * 1024 + 1)
+
+        if len(content) > 100 * 1024 * 1024:
+            raise HTTPException(
+                status_code=413,
+                detail="Video must be 100 MB or smaller."
+            )
+
+        lines = uploaded_video_transcript(content, filename)
+        return analyze_video(lines, filename)
+
+    except HTTPException:
+        raise
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except Exception as e:
+        print("Video Upload Error:", repr(e))
+        raise HTTPException(
+            status_code=500,
+            detail="Unable to process video. Check FFmpeg and server logs."
+        )
+
+
+# ==========================================
+# VIDEO RESEARCH - YOUTUBE LINK
+# ==========================================
+
+@app.post("/research-video/youtube")
+def research_youtube_video(request: YouTubeVideoRequest):
+    try:
+        lines = youtube_transcript(request.url)
+        return analyze_video(lines, request.url)
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except Exception as e:
+        print("YouTube Research Error:", repr(e))
+        raise HTTPException(
+            status_code=422,
+            detail="Transcript unavailable. Check the YouTube captions or server logs."
+        )
